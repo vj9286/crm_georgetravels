@@ -39,7 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'bookings',
     'flightbooking',
-    'nested_inline',
+    'nested_admin',
+    'daterange_filter',
+    'car_booking'
 ]
 
 MIDDLEWARE = [
@@ -57,7 +59,8 @@ ROOT_URLCONF = 'crm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            os.path.join(os.path.dirname(__file__), '../'),],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
