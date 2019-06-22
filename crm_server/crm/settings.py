@@ -25,7 +25,7 @@ SECRET_KEY = 'o^%3sn!7pw6kafxr-%36v4bp$^jp^k@4q)9znnz@$1-84(#fhx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['7dec45ea.ngrok.io', '127.0.0.1']
 
 
 # Application definition
@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'bookings',
+    'admin_reorder',
     'flightbooking',
     'nested_admin',
     'daterange_filter',
@@ -52,7 +53,22 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder',
 ]
+
+ADMIN_REORDER =[
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    {'app': 'auth',
+     'models': ('auth.User', 'auth.Group', 'auth.SiteAdmin', 'auth.Manager', 'auth.Moderator',
+                'auth.CustomerCare', 'auth.Customer')},
+    {'app': 'bookings', 'models': ('bookings.Booking',)},
+]
+
 
 ROOT_URLCONF = 'crm.urls'
 

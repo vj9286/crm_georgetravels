@@ -16,6 +16,7 @@ class Booking(models.Model):
 class CarBookingProxy(Booking):
     class Meta:
         proxy = True
+        verbose_name = 'Car Booking'
 
 
 class Notes(models.Model):
