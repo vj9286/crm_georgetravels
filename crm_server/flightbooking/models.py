@@ -6,13 +6,8 @@ from bookings.models import Booking
 
 class Flight(models.Model):
     booking = models.ForeignKey(Booking, null=False, blank=False, on_delete=models.CASCADE)
-    airline_name = models.CharField(max_length=100, blank=True, null=True)
-    airline_number = models.CharField(max_length=100, blank=True, null=True)
-    dep_airport = models.CharField(max_length=100, blank=True, null=True)
-    dep_date = models.DateTimeField(null=True, blank=True)
-    arr_airport = models.CharField(max_length=100, null=True, blank=True)
-    arr_date = models.DateTimeField(null=True, blank=True)
-    airline_class = models.CharField(max_length=10, null=True, blank=True)
+    booking_type = models.CharField(max_length=100, null=True, blank=True)
+    booking_company = models.CharField(max_length=100, null=True, blank=True)
     adult_net = models.FloatField(default=0.0)
     adult_tax = models.FloatField(default=0.0)
     adult_total = models.FloatField(default=0.0)
@@ -43,9 +38,28 @@ class Flight(models.Model):
     baggage_allowance = models.CharField(max_length=100, null=True, blank=True)
     net = models.FloatField(default=0.0)
     gross = models.FloatField(default=0.0)
+    pnr = models.CharField(max_length=100, blank=True, null=True)
+    airline_ref = models.CharField(max_length=100, null=True, blank=True)
+    added_date = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.airline_name
+        return self.booking.booking_name
+
+
+class Airline(models.Model):
+    flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
+    airline_name = models.CharField(max_length=100, blank=True, null=True)
+    airline_number = models.CharField(max_length=100, blank=True, null=True)
+    dep_airport = models.CharField(max_length=100, blank=True, null=True)
+    dep_date = models.DateField(null=True, blank=True)
+    dep_time = models.TimeField(null=True, blank=True)
+    arr_airport = models.CharField(max_length=100, null=True, blank=True)
+    arr_date = models.DateField(null=True, blank=True)
+    arr_time = models.TimeField(null=True, blank=True)
+    airline_class = models.CharField(max_length=10, null=True, blank=True)
+
+    class Meta:
+        ordering = ['-id']
 
 
 class Passenger(models.Model):
@@ -68,6 +82,7 @@ class Passenger(models.Model):
     flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
     title = models.CharField(max_length=100, null=True, blank=True, choices=TITLE_CHOICES)
     first_name = models.CharField(max_length=100, null=True, blank=True, verbose_name='First Name')
+    middle_name = models.CharField(max_length=100, null=True, blank=True, verbose_name='Middle Name')
     last_name = models.CharField(max_length=100, null=True, blank=True, verbose_name='Last Name')
     nationality = models.CharField(max_length=100, null=True, blank=True, default='United Kingdom',
                                    verbose_name='Nationality')

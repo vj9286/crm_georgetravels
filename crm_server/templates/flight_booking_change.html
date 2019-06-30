@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <title>Flight Booking</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
+   </head>
+   <style type="text/css">
+      body {
+      padding-top: 5px;
+      zoom:90%;
+      font-family: 'Roboto', sans-serif;
+      }
+      .cost{
+      width: 25%;
+      }
+      .sub-header {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      }
+      .sidebar {
+      display: none;
+      }
+      @media (min-width: 768px) {
+      .sidebar {
+      -webkit-box-shadow: 10px 10px 29px 0px rgba(207,196,207,1);
+      -moz-box-shadow: 10px 10px 29px 0px rgba(207,196,207,1);
+      box-shadow: 10px 10px 29px 0px rgba(207,196,207,1);
+      position: fixed;
+      top: 0px;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+      display: block;
+      padding: 20px;
+      overflow-x: hidden;
+      overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+      background-color: #f5f5f5;
+      border-right: 1px solid #eee;
+      }
+      }
+      /* Sidebar navigation */
+      .nav-sidebar {
+      margin-right: -21px; /* 20px padding + 1px border */
+      margin-bottom: 20px;
+      margin-left: -20px;
+      }
+      .nav-sidebar > li > a {
+      padding-right: 20px;
+      padding-left: 20px;
+      }
+      .nav-sidebar > .active > a,
+      .nav-sidebar > .active > a:hover,
+      .nav-sidebar > .active > a:focus {
+      color: #fff;
+      background-color: #428bca;
+      }
+      /*
+      * Main content
+      */
+      .main {
+      }
+      /*
+      * Main content
+      */
+      .main {
+      }
+      @media (min-width: 768px) {
+      .main {
+      padding-right: 40px;
+      padding-left: 40px;
+      }
+      }
+      .main .page-header {
+      margin-top: 0;
+      }
+      /*
+      * Placeholder dashboard ideas
+      */
+      .placeholders {
+      margin-bottom: 30px;
+      text-align: center;
+      }
+      .placeholders h4 {
+      margin-bottom: 0;
+      }
+      .placeholder {
+      margin-bottom: 20px;
+      }
+      .placeholder img {
+      display: inline-block;
+      border-radius: 50%;
+      }
+      .ainfo{
+      width: 100%;
+      font-size: 1.3rem;
+      }
+      .pinfo{
+      width: 100%;
+      }
+      .addbtn{
+      background-color: #00B852;
+      }
+      .removebtn{
+      background-color: red;
+      }
+      .home-sidebar, .home-sidebar a{
+      color: white;
+      background-color:black;
+      }
+      .nav li a{
+      text-align: center;
+      font-size: 2.2rem;
+      }
+      .neta{
+      margin:0%;
+      font-weight: bold;
+      }
+      .nettaxa,.nettotala{
+      margin-left: 25%;
+      font-weight: bold;
+      }
+      .Pricing{
+      text-align: center;
+      }
+   </style>
+   <body>
+      <div class="container-fluid">
+      <div class="row">
+         <div class="col-sm-3 col-md-2 sidebar">
+            <ul class="nav nav-sidebar">
+               <li class="home-sidebar"><a href="/homepage/">Home</span></a></li>
+               <li class="active"><a href="/flight_booking/{{name}}/change/">Flight</a></li>
+               <li><a href="/hotel_booking/{{name}}/change/">Hotel</a></li>
+               <li><a href="/car_hire/{{name}}/change/">Car Hire</a></li>
+               <li><a href="/cruise_hire/{{name}}/change/">Cruise Hire</a></li>
+               <li><a href="/tours/{{name}}/change/">Tours</a></li>
+               <li><a href='/package/{{name}}/change'>Package</a></li>
+               <li><a href="/payments/{{name}}/change/">Payment</a></li>
+               <li><a href="/accounts/{{name}}/change/">Accounts</a></li>
+               <li><a href="/notes/{{name}}/change/">Notes</a></li>
+<!--               <li><a href="/crm/Accounts/?name={{name}}/">Cart Id:</a></li>-->
+               <li><a href="#">Booking-ID:{{flight_with_pass.0.booking.booking_id}}</a></li>
+               <li><a href="#">Booked By:{{flight_with_pass.0.booking.booking_agent}}</a></li>
+            </ul>
+         </div>
+         <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            <h4 class="page-header">CRM George Travels</h4>
+            <ul class="nav nav-tabs addtab">
+                {% for key, value in flight_with_pass.items %}
+               <li class="{% if forloop.counter == 1 %}active{% endif %}"><a data-toggle="tab" href="#home_{{forloop.counter}}">Flight{{forloop.counter}}  <span class="glyphicon glyphicon-plus" onclick="addflights();"></span></a></li>
+                {% endfor %}
+            </ul>
+            <div class="tab-content add-tab-content">
+               {% for key, value in flight_with_pass.items %}
+               <div id="home_{{forloop.counter}}" class="tab-pane fade in {% if forloop.counter == 1 %} active {% endif %}">
+                  <br>
+                  <form method="post" id="form_{{forloop.counter}}">
+                     <input type="hidden" name="flight_id" value="{{value.flight.id}}">
+                     <div class="row">
+                        <div class="col-xs-3 col-sm-3 col-lg-3 col-md-3">
+                           <input type="radio" name="livebooking" value="LiveBooking" {% if value.flight.booking_type == 'LiveBooking' %}checked{% endif %}> <strong>LiveBooking</strong> <br>
+                           <input type="radio" name="livebooking" value="AdvancePurchase" {% if value.flight.booking_type == 'AdvancePurchase' %}checked{% endif %}> <strong>AdvancePurchase</strong>
+                        </div>
+                        <div class="col-xs-3 col-sm-3 col-lg-3 col-md-3">
+                           <input type="radio" name="worldspan" value="WorldSpan" {% if value.flight.booking_company == 'WorldSpan' %}checked{% endif %}> <strong>WorldSpan</strong> <br>
+                           <input type="radio" name="worldspan" value="Galileo" {% if value.flight.booking_company == 'Galileo' %}checked{% endif %}> <strong>Galileo</strong><br>
+                           <input type="radio" name="worldspan" value="Amadeus" {% if value.flight.booking_company == 'Amadeus' %}checked{% endif %}> <strong>Amadeus</strong>
+                        </div>
+                        <div class="col-xs-6 col-sm-6 col-lg-6 col-md-6">
+                           <div class="col-md-3 col-lg-3"><label>PNR</label>: </div>
+                           <input type="text" name="PNR" placeholder="PNR" value="{{value.flight.pnr}}"> <br>
+                           <div class="col-md-3 col-lg-3"><label>Airline Reference</label>:</div>
+                           <input type="text" name="AirRef" placeholder="Airline Reference" value="{{value.flight.airline_ref}}" > <br>
+                           <div class="col-md-3 col-lg-3"><label>Booking Name</label>:</div>
+                           <input type="text" name="booking_name" placeholder="Booking Name"value="{{value.booking.booking_name}}" > <br>
+                        </div>
+                     </div>
+                     <br>
+                     <div class="panel panel-default">
+                        <div class="panel-heading">Airline Info</div>
+                     </div>
+                     <div class="table-responsive">
+                        <table class="table table-striped airinfo" id="airinfo_{{forloop.counter}}">
+                           <thead>
+                              <tr>
+                                 <th>Airline</th>
+                                 <th>A No.</th>
+                                 <th>Dep Airport</th>
+                                 <th>Dep Date</th>
+                                 <th>Dep Time</th>
+                                 <th>Arr Airport</th>
+                                 <th>Arr Date</th>
+                                 <th>Arr Time</th>
+                                 <th>Class</th>
+                                 <th> <button id="button_addairline_{{forloop.counter}}" type="button" onclick="addmore(this.id);" class="btn btn-default btn-sm addbtn"><span class="glyphicon glyphicon-plus"></span> </button></th>
+                                 <th> <button id="button_remove_{{forloop.counter}}" type="button" onclick="removelastchild(this.id);" class="btn btn-default btn-sm removebtn"> <span class="glyphicon glyphicon-minus"></span></button></th>
+                              </tr>
+                           </thead>
+                           <tbody class="addhere" id="addhere_{{forloop.counter}}">
+                              {% for k in value.airline %}
+                              <tr class="addairline" id="addairline_{{forloop.counter}}">
+                                 <input type="hidden" name="airline_id" value="{{k.id}}">
+                                 <td><input class="form-control ainfo" type="text" name="airline" value="{{k.airline_name}}"></td>
+                                 <td><input class="form-control ainfo" type="text" name="anumber" value="{{k.airline_number}}"></td>
+                                 <td><input class="form-control ainfo" type="text" name="dpairport" value="{{k.dep_airport}}"></td>
+                                 <td><input class="form-control ainfo" type="text" name="ddate" value="{{k.dep_date | date:'d F Y'}}"></td>
+                                 <td><input class="form-control ainfo" type="text" name="dtime" value="{{k.dep_time}}"></td>
+                                 <td><input class="form-control ainfo" type="text" name="arrairport" value="{{k.dep_airport}}"></td>
+                                 <td><input class="form-control ainfo" type="text" name="adate" value="{{k.arr_date | date:'d F Y'}}"></td>
+                                 <td><input class="form-control ainfo" type="text" name="atime" value="{{k.arr_time}}"></td>
+                                 <td><input class="form-control ainfo" type="text" name="aclass" value="{{k.airline_class}}"></td>
+                              </tr>
+                              {% endfor %}
+                           </tbody>
+                        </table>
+                     </div>
+                     <div class="panel panel-default">
+                        <div class="panel-heading">Flight Pricing</div>
+                     </div>
+                     <div class="table-responsive">
+                        <table class="table table-striped">
+                           <thead>
+                              <style type="text/css">
+                              </style>
+                              <tr>
+                                 <th class="Pricing">Adult(16+yrs)<br><span class="neta">Net</span><span class="nettaxa">Nettax<span class="nettotala">Total</span></th>
+                                 <th class="Pricing">Youth(12-15yrs)<br><span class="neta">Net</span><span class="nettaxa">Nettax<span class="nettotala">Total</span></th>
+                                 <th class="Pricing">Child (2-11yrs)<br><span class="neta">Net</span><span class="nettaxa">Nettax<span class="nettotala">Total</span></th>
+                                 <th class="Pricing">Infant(< 2yrs)<br><span class="neta">Net</span><span class="nettaxa">Nettax<span class="nettotala">Total</span></th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="ANfare" placeholder="Net" value="{{value.flight.adult_net}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="ANtax" placeholder="Nettax" value="{{value.flight.adult_tax}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="ANtotal" placeholder="Total" value="{{value.flight.adult_total}}" readonly>
+                                 </td>
+                                 <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="YNfare" placeholder="Net" value="{{value.flight.youth_net}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="YNtax" placeholder="Nettax" value="{{value.flight.youth_tax}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="YNtotal" placeholder="Total" value="{{value.flight.youth_total}}" readonly>
+                                 </td>
+                                 <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="CNfare" placeholder="Net" value="{{value.flight.child_net}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="CNtax" placeholder="Nettax" value="{{value.flight.child_tax}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="CNtotal" placeholder="Total" value="{{value.flight.child_total}}" readonly>
+                                 </td>
+                                 <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="INfare" placeholder="Net" value="{{value.flight.infant_net}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="INtax" placeholder="Nettax" value="{{value.flight.infant_tax}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="INtotal" placeholder="Total" value="{{value.flight.infant_total}}" readonly>
+                                 </td>
+                              <tr>
+                                 <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Afare" placeholder="GrossNet" value="{{value.flight.adult_gross}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Atax" placeholder="Grosstax" value="{{value.flight.adult_gross_tax}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Atotal" placeholder="GrossTotal" value="{{value.flight.adult_gross_total}}" readonly>
+                                 </td>
+                                 <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Yfare" placeholder="GrossNet" value="{{value.flight.youth_gross}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Ytax" placeholder="Grosstax" value="{{value.flight.youth_gross_tax}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Ytotal" placeholder="GrossTotal" value="{{value.flight.youth_gross_total}}" readonly>
+                                 </td>
+                                 <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Cfare" placeholder="GrossNet" value="{{value.flight.child_gross}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Ctax" placeholder="Grosstax" value="{{value.flight.child_gross_tax}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Ctotal" placeholder="GrossTotal" value="{{value.flight.child_gross_total}}" readonly>
+                                 </td>
+                                 <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Ifare" placeholder="GrossNet" value="{{value.flight.infant_gross}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Itax" placeholder="Grosstax" value="{{value.flight.infant_gross_tax}}">
+                                    <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Itotal" placeholder="GrossTotal" value="{{value.flight.child_gross_total}}" readonly>
+                                 </td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <br>
+                        <div class="row">
+                           <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+                              <div class="col-sm-2 col-md-2 col-lg-2 col-xs-2">
+                                 <label> Net:</label>
+                              </div>
+                              <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
+                                 <input type="text" name="Net" class="form-control" value="{{value.flight.net}}">
+                              </div>
+                           </div>
+                           <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+                              <div class="col-sm-2 col-md-2 col-lg-2 col-xs-2">
+                                 <label>Gross:</label>
+                              </div>
+                              <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
+                                 <input type="text" name="Gross" class="form-control" value="{{value.flight.gross}}">
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <br>
+                     <div class="panel panel-default">
+                        <div class="panel-heading">Passenger Information</div>
+                     </div>
+                     <div class="table-responsive">
+                        <table class="table table-striped passinfo" id="passinfo_{{forloop.counter}}">
+                           <thead>
+                              <tr>
+                                 <th>Title</th>
+                                 <th>First Name</th>
+                                 <th>Middle Name</th>
+                                 <th>last Name</th>
+                                 <th>Nationality</th>
+                                 <th>D.O.B</th>
+                                 <th>Gender</th>
+                                 <th>Age Group</th>
+                                 <th> <button id="add_pass_{{forloop.counter}}" type="button" onclick="addmorepass(this.id);calculatenetandgross(this.form.id);"class="btn btn-default btn-sm addbtn"><span class="glyphicon glyphicon-plus"></span> </button></th>
+                                 <th> <button id="remove_pass_{{forloop.counter}}" type="button" onclick="removelastchildpass(this.id);calculatenetandgross(this.form.id);" class="btn btn-default btn-sm removebtn"> <span class="glyphicon glyphicon-minus"></span></button></th>
+                              </tr>
+                           </thead>
+                           <tbody class="addpasshere" id="addpasshere_{{forloop.counter}}">
+                              {% for p in value.passengers %}
+                              <tr class="addpass" id="addpass_{{forloop.counter}}">
+                                 <input type="hidden" value="{{p.id}}" name="passenger_id">
+                                 <td>
+                                    <select name="title" class="form-control">
+                                       <option value="{{p.title}}" selected>{{p.title}}</option>
+                                       <option Value="Mr">Mr.</option>
+                                       <option value="Mrs">Mrs.</option>
+                                       <option value="Miss">Miss</option>
+                                       <option data-sync="MS" value="MS">MS</option>
+                                       <option data-sync="MSTR" value="MSTR">MSTR</option>
+                                    </select>
+                                 </td>
+                                 <td><input class="form-control pinfo" type="text" name="fname" value="{{p.first_name}}"></td>
+                                 <td><input class="form-control pinfo" type="text" name="mname" value="{{p.middle_name}}"></td>
+                                 <td><input class="form-control pinfo" type="text" name="lname" value="{{p.last_name}}"></td>
+                                 <td><input class="form-control pinfo" type="text" name="nationality" value="{{p.nationality}}"></td>
+                                 <td><input class="form-control pinfo" type="text" name="dob" value="{{p.dob | date:'d F Y'}}"></td>
+                                 <td>
+                                    <select name="gender" class="form-control">
+                                       <option>Gender</option>
+                                       <option value="Male" {% if p.gender == 'M' %} selected{% endif %}>Male</option>
+                                       <option value="Female" {% if p.gender == 'F' %} selected{% endif %}>Female</option>
+                                    </select>
+                                 </td>
+                                 <td>
+                                    <select class="form-control" name="agegroup" onchange ="calculatenetandgross(this.form.id);">
+                                       <option selected>AgeGroup</option>
+                                       <option value="{{p.age_group}}" selected>{{p.age_group}}</option>
+                                       <option value="Adult" >Adult</option>
+                                       <option value="Youth" >Youth</option>
+                                       <option value="Child" >Child</option>
+                                       <option value="Infant">Infant</option>
+                                    </select>
+                                 </td>
+                              </tr>
+                              {% endfor %}
+                           </tbody>
+                        </table>
+                     </div>
+                     <div class="panel panel-default">
+                        <div class="panel-heading">To be Filled By Admin Only</div>
+                     </div>
+                     <div class="table-responsive">
+                        <table class="table table-striped">
+                           <thead>
+                              <tr>
+                                 <th>Eticket</th>
+                                 <th>Issue Date</th>
+                                 <th>Baggage Allowance</th>
+                                 <th>Supplier</th>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr>
+                                 <td><input  type="text" name="Eticket" class="form-control" value="{{value.flight.e_ticket}}"></td>
+                                 <td><input  type="text" name="issuedate" class="form-control" value="{{value.flight.issue_date | date:'d F Y'}}"></td>
+                                 <td><input  type="text" name="BaggageAllowance" class="form-control" value="{{value.flight.baggage_allowance}}"></td>
+                                 <td><input  type="text" name="ASupplier" class="form-control" value="{{value.flight.supplier}}"></td>
+                              </tr>
+                           </tbody>
+                        </table>
+                        <!--            <input type="checkbox" name="IsReference" value="IsReference" onchange="checkreference(this.form.id);"><strong>Reference Only</strong>-->
+                        <center><button class="btn btn-success" type="submit" name="submit1" value="{{value.flight.id}}">Submit</button></center>
+                  </form>
+                   <center><a href="/flight_booking/{{name}}/{{value.flight.id}}/delete/"><button class="btn btn-danger" type="button" name="delete" value="{{value.flight.id}}">Delete</button></a></center>
+
+                  </div>
+               </div>
+             {% endfor %}
+            </div>
+         </div>
+         <script type="text/javascript">
+            function addmore(value){
+              var number = value.split("_");
+              number = number[2];
+              var test =  '<td><input class="form-control ainfo" type="text" name="airline"></td> <td><input class="form-control ainfo" type="text" name="anumber"></td> <td><input class="form-control ainfo" type="text" name="dpairport"></td> <td><input class="form-control ainfo" type="text" name="ddate"></td> <td><input class="form-control ainfo" type="text" name="dtime"></td> <td><input class="form-control ainfo" type="text" name="arrairport"></td> <td><input class="form-control ainfo" type="text" name="adate"></td> <td><input class="form-control ainfo" type="text" name="atime"></td> <td><input class="form-control ainfo" type="text" name="aclass"></td>';
+              var addhere = "#addhere_" + number;
+
+               $(addhere).append("<tr>"+test+"</tr>");
+                addcalender();
+                }
+            function removelastchild(value){
+            console.log(value);
+             var number = value.split("_");
+             number = number[2];
+             var airinfo = "#airinfo_" + number + " tr";
+             var length = $(airinfo).length;
+             var airinfoadd = "#airinfo_" + number + " tr:last";
+              if(length-1<=1){
+                //do nothing
+              }else{
+               $(airinfoadd).remove();
+              }
+
+              }
+
+         </script>
+         <script type="text/javascript">
+            function addmorepass(value){
+              var number = value.split("_");
+              number = number[2];
+              var addpass = "#addpass_" + number;
+              var test =  '<tr class="addpass" id="addpass_">' + number +'<td> <select name="title" class="form-control"> <option Value="Mr">Mr.</option> <option value="Mrs">Mrs.</option> <option value="Miss">Miss</option> <option data-sync="MS" value="MS">MS</option> <option data-sync="MSTR" value="MSTR">MSTR</option> </select> </td> <td><input class="form-control pinfo" type="text" name="fname"></td> <td><input class="form-control pinfo" type="text" name="mname"></td> <td><input class="form-control pinfo" type="text" name="lname"></td> <td><input class="form-control pinfo" type="text" name="nationality"></td> <td><input class="form-control pinfo" type="text" name="dob"></td> <td><select name="gender" class="form-control"> <option>Gender</option> <option value="Male">Male</option> <option value="Female">Female</option> </select> </td> <td><select class="form-control" name="agegroup" onchange ="calculatenetandgross(this.form.id);"> <option selected>AgeGroup</option> <option value="Adult" >Adult</option> <option value="Youth" >Youth</option> <option value="Child" >Child</option> <option value="Infant">Infant</option> </select> </td> </tr>';
+              var addpasshere = "#addpasshere_" + number;
+               $(addpasshere).append("<tr>"+test+"</tr>");
+               addcalender();
+                }
+
+            function removelastchildpass(value){
+              var number = value.split("_");
+              number = number[2];
+              var passinfo = "#passinfo_" + number +" tr";
+              var length = $(passinfo).length;
+               var passinfolast = "#passinfo_" + number +" tr:last";
+
+              if(length-1<=1){
+                //do nothing
+              }else{
+               $(passinfolast).remove();
+              }
+
+              }
+
+              function addflights(){
+                var length = $('.addtab li').length;
+                var lielement = "<li><a data-toggle='tab'" + "href="+ "#flight" + (length+1) + ">" + "Flight " + (length+1) + "  <span class='glyphicon glyphicon-remove' onclick='removeflight(this.id);' id='"+(length+1)+"''></span></a></li>";
+                var current =  $('.addtab').append(lielement);
+                var fillcontent = "<div id='flight" + (length+1) +"' class='tab-pane fade'><br>"+'<form method="post" id="form_'+(length+1)+'"><div class="row"> <div class="col-xs-3 col-sm-3 col-lg-3 col-md-3"> <input type="radio" name="livebooking" value="LiveBooking" checked> <strong>LiveBooking</strong> <br> <input type="radio" name="livebooking" value="AdvancePurchase"> <strong>AdvancePur </div> <div class="col-xs-3 col-sm-3 col-lg-3 col-md-3"> <input type="radio" name="worldspan" value="WorldSpan" checked> <strong>WorldSpan</strong> <br> <input type="radio" name="worldspan" value="Galileo"> <strong>Galileo</strong><br> <input type="radio" name="worldspan" value="Amadeus"> <strong>Amadeus</strong> </div><div class="col-xs-6 col-sm-6 col-lg-6 col-md-6"> <div class="col-md-3 col-lg-3"><label>PNR</label>: </div><input type="text" name="PNR" placeholder="PNR"> <br> <div class="col-md-3 col-lg-3"><label>Airline Reference</label>:</div> <input type="text" name="AirRef" placeholder="Airline Reference"> <br><div class="col-md-3 col-lg-3"><label>Booking Name</label>:</div> <input type="text" name="booking_name" placeholder="Booking Name"> <br> </div> </div>' + '<br> <div class="panel panel-default"> <div class="panel-heading">Airline Info</div></div> <div class="table-responsive"><table class="table table-striped airinfo" id="airinfo_'+(length+1)+'"><thead><tr><th>Airline</th><th>A No.</th><th>Dep Airport</th><th>Dep Date</th><th>Dep Time</th><th>Arr Airport</th><th>Arr Date</th><th>Arr Time</th><th>Class</th><th> <button type="button" id="button_addairline_'+ (length+1)+ '" onclick="addmore(this.id);" class="btn btn-default btn-sm addbtn"><span class="glyphicon glyphicon-plus"></span> </button></th><th> <button type="button" id="button_remove_' +(length+1) +'" onclick="removelastchild(this.id);" class="btn btn-default btn-sm removebtn"> <span class="glyphicon glyphicon-minus"></span></button></th></tr></thead><tbody class="addhere" id="addhere_'+(length+1)+'"><tr class="addairline" id="addairline_'+(length+1)+'" ><td><input class="form-control ainfo" type="text" name="airline"></td><td><input class="form-control ainfo" type="text" name="anumber"></td><td><input class="form-control ainfo" type="text" name="dpairport"></td><td><input class="form-control ainfo" type="text" name="ddate"> <td><input class="form-control ainfo" type="text" name="dtime"></td></td><td><input class="form-control ainfo" type="text" name="arrairport"></td><td><input class="form-control ainfo" type="text" name="adate"></td><td><input class="form-control ainfo" type="text" name="atime"></td><td><input class="form-control ainfo" type="text" name="aclass"></td></tr></tbody></table></div><div class="panel panel-default"><div class="panel-heading">Flight Pricing</div></div><div class="table-responsive"><table class="table table-striped"><thead><tr><th class="Pricing">Adult(16+yrs)<br><span class="neta">Net</span><span class="nettaxa">Nettax<span class="nettotala">Total</span></th> <th class="Pricing">Youth(12-15yrs)<br><span class="neta">Net</span><span class="nettaxa">Nettax<span class="nettotala">Total</span></th> <th class="Pricing">Child (2-11yrs)<br><span class="neta">Net</span><span class="nettaxa">Nettax<span class="nettotala">Total</span></th> <th class="Pricing">Infant(< 2yrs)<br><span class="neta">Net</span><span class="nettaxa">Nettax<span class="nettotala">Total</span></th></tr></thead><tbody><tr> <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="ANfare" placeholder="Net"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="ANtax" placeholder="Nettax"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="ANtotal" placeholder="Total" readonly> </td> <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="YNfare" placeholder="Net"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="YNtax" placeholder="Nettax"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="YNtotal" placeholder="Total" readonly> </td> <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="CNfare" placeholder="Net"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="CNtax" placeholder="Nettax"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="CNtotal" placeholder="Total" readonly> </td> <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="INfare" placeholder="Net"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="INtax" placeholder="Nettax"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="INtotal" placeholder="Total" readonly> </td> <tr> <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Afare" placeholder="GrossNet"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Atax" placeholder="Grosstax"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Atotal" placeholder="GrossTotal" readonly> </td> <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Yfare" placeholder="GrossNet"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Ytax" placeholder="Grosstax"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Ytotal" placeholder="GrossTotal" readonly> </td> <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Cfare" placeholder="GrossNet"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Ctax" placeholder="Grosstax"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Ctotal" placeholder="GrossTotal" readonly> </td> <td class="col-sm-4 col-lg-4 col-md-4 col-xs-4 cost"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Ifare" placeholder="GrossNet"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Itax" placeholder="Grosstax"> <input class="col-sm-4 col-lg-4 col-md-4 col-xs-4" type="text" name="Itotal" placeholder="GrossTotal" readonly> </td> </tr></tbody></table><div class="row"> <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12"> <div class="col-sm-2 col-md-2 col-lg-2 col-xs-2"> <label> Net:</label> </div> <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4"> <input type="text" name="Net" class="form-control"> </div> </div> <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12"> <div class="col-sm-2 col-md-2 col-lg-2 col-xs-2"> <label>Gross:</label> </div> <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4"> <input type="text" name="Gross" class="form-control"> </div> </div> </div><br></div><div class="panel panel-default"><div class="panel-heading">Passenger Information</div></div><div class="table-responsive"><table class="table table-striped passinfo" id="passinfo_'+(length+1)+'"><thead><tr><th>Title</th><th>First Name</th><th>Middle Name</th><th>last Name</th><th>Nationality</th><th>D.O.B</th><th>Gender</th><th>Age Group</th><th> <button type="button" id="add_pass_' +(length+1)+ '" onclick="addmorepass(this.id);calculatenetandgross(this.form.id);"class="btn btn-default btn-sm addbtn"><span class="glyphicon glyphicon-plus"></span> </button></th><th> <button type="button" id="remove_pass_'+(length+1)+'" onclick="removelastchildpass(this.id);calculatenetandgross(this.form.id);" class="btn btn-default btn-sm removebtn"> <span class="glyphicon glyphicon-minus"></span></button></th></tr></thead><tbody class="addpasshere" id="addpasshere_'+(length+1)+'"><tr class="addpass" id="addpass_'+(length+1)+'"><td><select name="title" class="form-control"> <option Value="Mr">Mr.</option> <option value="Mrs">Mrs.</option> <option value="Miss">Miss</option> <option data-sync="MS" value="MS">MS</option> <option data-sync="MSTR" value="MSTR">MSTR</option> </select></td><td><input class="form-control pinfo" type="text" name="fname"></td><td><input class="form-control pinfo" type="text" name="mname"></td><td><input class="form-control pinfo" type="text" name="lname"></td><td><input class="form-control pinfo" type="text" name="nationality"></td><td><input class="form-control pinfo" type="text" name="dob"></td><td><select name="gender" class="form-control"> <option>Gender</option> <option value="Male">Male</option> <option value="Female">Female</option> </select></td><td><select class="form-control" name="agegroup" onchange ="calculatenetandgross(this.form.id,this.value);"> <option>AgeGroup</option> <option value="Adult" >Adult</option> <option value="Youth" >Youth</option> <option value="Child" >Child</option> <option value="Infant" >Infant</option> </select></td></tr></tbody></table></div><div class="panel panel-default"><div class="panel-heading">To be Filled By Admin Only</div></div><div class="table-responsive"><table class="table table-striped"><thead><tr><th>Eticket</th><th>Issue Date</th><th>Baggage Allowance</th><th>Supplier</th></tr></thead><tbody><tr><td><input  type="text" name="Eticket" class="form-control"></td><td><input  type="text" name="issuedate" class="form-control"></td><td><input  type="text" name="BaggageAllowance" class="form-control"></td><td><input  type="text" name="ASupplier" class="form-control"></td></tr></tbody></table> <input type="checkbox" name="IsReference" value="IsReference" onchange="checkreference(this.form.id);"><strong>Reference Only</strong><center><button class="btn btn-success" type="submit" name="submit'+(length+1)+'">Submit</button></center></div>';
+                $('.add-tab-content').append(fillcontent);
+                addcalender();
+              }
+
+              function removeflight(value){
+                var generateid = ".addtab li:nth-child(" + value + ")";
+                $(generateid).remove();
+                var genidflight = "#flight" + value;
+                $(genidflight).remove();
+
+              }
+
+            $(document).ready(function(){
+            var date_input=$('input[name="ddate"],input[name="adate"],input[name="dob"], input[name="issuedate"]'); //our date input has the name "date"
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            date_input.datepicker({
+              format: 'd MM yyyy',
+              container: container,
+              todayHighlight: true,
+              autoclose: true,
+            })
+            })
+            function addcalender(){
+            $(document).ready(function(){
+            var date_input=$('input[name="ddate"],input[name="adate"],input[name="dob"], input[name="issuedate"]'); //our date input has the name "date"
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            date_input.datepicker({
+              format: 'd MM yyyy',
+              container: container,
+              todayHighlight: true,
+              autoclose: true,
+            })
+            })
+            }
+            function calculatenetandgross(value)
+            {   var adult =0;
+              var child =0;
+              var infant=0;
+              var youth =0;
+              var adnetfare=document.forms[id=value]["ANfare"].value;
+              var adnettax = document.forms[id=value]["ANtax"].value;
+              var ynfare   = document.forms[id=value]["YNfare"].value;
+              var yntax    = document.forms[id=value]["YNtax"].value;
+              var cnfare   = document.forms[id=value]["CNfare"].value;
+              var cntax    = document.forms[id=value]["CNtax"].value;
+              var infare   = document.forms[id=value]["INfare"].value;
+              var intax    = document.forms[id=value]["INtax"].value;
+              var adgrossfare=document.forms[id=value]["Afare"].value;
+              var adgrosstax = document.forms[id=value]["Atax"].value;
+              var yngrossfare= document.forms[id=value]["Yfare"].value;
+              var yngrosstax = document.forms[id=value]["Ytax"].value;
+              var cngrossfare= document.forms[id=value]["Cfare"].value;
+              var cngrosstax = document.forms[id=value]["Ctax"].value;
+              var ingrossfare= document.forms[id=value]["Ifare"].value;
+              var ingrosstax = document.forms[id=value]["Itax"].value;
+              var temp = "#" + value + " .addpasshere tr";
+              $(temp).each(function(){
+                var AgeGroup = $(this).find('[name="agegroup"]').val();
+                if(AgeGroup=="Adult"){
+                  adult += 1;
+                }else if (AgeGroup=="Youth"){
+                  youth +=1;
+                }else if(AgeGroup == "Child"){
+                  child +=1;
+                }else if (AgeGroup == "Infant"){
+                  infant +=1;
+                }
+              });
+
+             var totalnetadult = ((parseFloat(adnetfare)||0) + (parseFloat(adnettax) ||0 )) * parseInt(adult);
+             var totalnetyouth = ((parseFloat(ynfare)||0) + (parseFloat(yntax)||0)) * parseInt(youth);
+             var totalnetchild = ((parseFloat(cnfare)||0) + (parseFloat(cntax)||0)) * parseInt(child);
+             var totalnetinfant = ((parseFloat(infare)||0) + (parseFloat(intax)||0)) * parseInt(infant);
+             document.forms[id=value]["ANtotal"].value = totalnetadult;
+             document.forms[id=value]["CNtotal"].value = totalnetchild;
+             document.forms[id=value]["INtotal"].value = totalnetinfant;
+             document.forms[id=value]["YNtotal"].value = totalnetyouth;
+
+             var totalgrossadult = ((parseFloat(adgrossfare)||0) + (parseFloat(adgrosstax)||0)) * parseInt(adult);
+             var totalgrossyouth = ((parseFloat(yngrossfare)||0) + (parseFloat(yngrosstax)||0)) * parseInt(youth);
+             var totalgrosschild = ((parseFloat(cngrossfare)||0) + (parseFloat(cngrosstax)||0)) * parseInt(child);
+             var totalgrossinfant =((parseFloat(ingrossfare)||0) +(parseFloat(ingrosstax)||0)) * parseInt(infant);
+             document.forms[id=value]["Atotal"].value = totalgrossadult;
+             document.forms[id=value]["Ctotal"].value = totalgrosschild;
+             document.forms[id=value]["Itotal"].value = totalgrossinfant;
+             document.forms[id=value]["Ytotal"].value = totalgrossyouth;
+             var totalnet = totalnetadult +totalnetyouth + totalnetchild +totalnetinfant ;
+             var totalgross = totalgrossyouth +totalgrossinfant +totalgrossadult+totalgrosschild;
+             document.forms[id=value]["Net"].value = totalnet;
+             document.forms[id=value]["Gross"].value = totalgross;
+
+             }
+            function checkreference(value){
+            if(document.forms[id=value]["IsReference"].checked==true){
+            document.forms[id=value]["ANfare"].readOnly = true;
+            document.forms[id=value]["ANtax"].readOnly = true;
+            document.forms[id=value]["CNfare"].readOnly = true;
+            document.forms[id=value]["CNtax"].readOnly = true;
+            document.forms[id=value]["YNfare"].readOnly = true;
+            document.forms[id=value]["YNtax"].readOnly = true;
+            document.forms[id=value]["INfare"].readOnly = true;
+            document.forms[id=value]["INtax"].readOnly = true;
+            document.forms[id=value]["Afare"].readOnly = true;
+            document.forms[id=value]["Atax"].readOnly = true;
+            document.forms[id=value]["Cfare"].readOnly = true;
+            document.forms[id=value]["Ctax"].readOnly = true;
+            document.forms[id=value]["Yfare"].readOnly = true;
+            document.forms[id=value]["Ytax"].readOnly = true;
+            document.forms[id=value]["Ifare"].readOnly = true;
+            document.forms[id=value]["Itax"].readOnly = true;
+            }
+            else{
+            document.forms[id=value]["ANfare"].readOnly = false;
+            document.forms[id=value]["ANtax"].readOnly = false;
+            document.forms[id=value]["CNfare"].readOnly = false;
+            document.forms[id=value]["CNtax"].readOnly = false;
+            document.forms[id=value]["YNfare"].readOnly = false;
+            document.forms[id=value]["YNtax"].readOnly = false;
+            document.forms[id=value]["INfare"].readOnly = false;
+            document.forms[id=value]["INtax"].readOnly = false;
+            document.forms[id=value]["Afare"].readOnly = false;
+            document.forms[id=value]["Atax"].readOnly = false;
+            document.forms[id=value]["Cfare"].readOnly = false;
+            document.forms[id=value]["Ctax"].readOnly = false;
+            document.forms[id=value]["Yfare"].readOnly =false;
+            document.forms[id=value]["Ytax"].readOnly = false;
+            document.forms[id=value]["Ifare"].readOnly = false;
+            document.forms[id=value]["Itax"].readOnly = false;
+            }
+            }
+
+         </script>
+         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+         <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+      </div>
+   </body>
+</html>

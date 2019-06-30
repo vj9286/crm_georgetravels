@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{title}}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+  <style>
+    .shadow-button{
+    -webkit-box-shadow: 10px 10px 30px 0px rgba(191,191,191,1);
+    -moz-box-shadow: 10px 10px 30px 0px rgba(191,191,191,1);
+    box-shadow: 10px 10px 30px 0px rgba(191,191,191,1);
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-inverse" style="background-color:#417690;border:0px solid white;">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../" style="color:#C1D255;">{{title}}</a>
+    </div>
+
+    <ul class="nav navbar-nav navbar-right">
+       <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:white;">{{username | title}}<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href="/admin/password_change" >Change Password</a></li>
+          <li><a href="#">Role : {{role}}</a></li>
+          <li><a href="/admin/logout">logout</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <h2>{{title}}</h2>
+  <div class="panel panel-default">
+    <div class="panel-heading">{{booking_title}}</div>
+    <div class="panel-body">
+      <a href="../flight_booking"><button type="button" class="btn btn-default shadow-button">Create Booking</button></a>
+      <a href="/admin/auth/user/add/"><button type="button" class="btn btn-default shadow-button">Create User Account</button></a>
+      <a href="/admin/flightbooking/passenger/"><button type="button" class="btn btn-default shadow-button">Search Booking</button></a>
+<!--      <button type="button" class="btn btn-default shadow-button">Clone Booking</button>-->
+      <button type="button" class="btn btn-default shadow-button">Pending Booking</button>
+      <button type="button" class="btn btn-default shadow-button">Messages</button>
+      <button type="button" class="btn btn-default shadow-button">Reports</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

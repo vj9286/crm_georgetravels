@@ -4,6 +4,7 @@ from flightbooking.models import Flight, Passenger
 import nested_admin
 from daterange_filter.filter import DateRangeFilter
 from car_booking.models import CarBooking
+from django.utils.safestring import mark_safe
 
 # Register your models here.
 
@@ -21,36 +22,36 @@ class FlightInline(nested_admin.NestedStackedInline):
     model = Flight
     extra = 1
     fk_name = 'booking'
-    fieldsets = (('Flight Details', {'fields': (('airline_name', 'airline_number', 'dep_airport',
-                                                'arr_airport'),('dep_date', 'arr_date', 'airline_class',),)}),
-                 ('Pricing Details', {'fields': (('adult_net', 'adult_tax', 'adult_total', 'adult_gross',
-                                                  'adult_gross_tax', 'adult_gross_total'),
-                                                 ('youth_net', 'youth_tax', 'youth_total', 'youth_gross',
-                                                  'youth_gross_tax', 'youth_gross_total'),
-                                                 ('child_net', 'child_tax', 'child_total', 'child_gross',
-                                                  'child_gross_tax', 'child_gross_total'), (
-                                                  'infant_net', 'infant_tax', 'infant_total', 'infant_gross',
-                                                 'infant_gross_tax', 'infant_gross_total'),), },),
-                 ('Total Prices', {'fields':(('net', 'gross'),),}),
-                 ('To be Filled by Admin', {'fields': (('e_ticket', 'issue_date', 'baggage_allowance',
-                                                        'supplier'),), })
-                 )
     inlines = [PassengerInline]
 
 
-class BookingAdmin(nested_admin.NestedModelAdmin):
-    list_display = ['booking_id', 'booking_name', 'added_date']
-    inlines = [FlightInline]
-    search_fields = ('booking_id', 'booking_name')
-    list_filter = (('added_date', DateRangeFilter),)
+class PassengerAdmin(admin.ModelAdmin):
+    list_display = ['booking_ref', 'booking_name', 'added_date']
+    # inlines = [FlightInline]
+    search_fields = ('flight__booking__booking_id', 'flight__booking__booking_name', 'first_name', 'middle_name',
+                     'last_name')
+    list_filter = (('flight__added_date', DateRangeFilter),)
     fieldsets = (("Booking Details", {'fields': (('booking_id', 'booking_name'),)}),)
-    change_form_template = 'templates/booking_page.html'
+    change_list_template = 'templates/flight_search_change_list.html'
 
-    def change_view(self, request, object_id, form_url='', extra_context=None):
-        extra_context = dict()
-        extra_context['object_id'] = object_id
-        return super(BookingAdmin, self).change_view(request, object_id, form_url=form_url,
-                                                                extra_context=extra_context)
+    def has_add_permission(self, request):
+        return False
+
+    def booking_name(self, obj):
+        return obj.flight.booking.booking_name
+
+    @mark_safe
+    def booking_ref(self, obj):
+        return '<a href="/flight_booking/{0}/change/">{1}</a>'.format(obj.flight.booking.id, obj.flight.booking.booking_id)
+
+    booking_ref.allow_tags = True
+
+    def booking_id(self, obj):
+        return obj.booking.booking_id
+
+    def added_date(self, obj):
+        return obj.flight.added_date
+
 
 
 class CarBookingInline(admin.StackedInline):
@@ -73,7 +74,7 @@ class CarBookingAdmin(admin.ModelAdmin):
     readonly_fields = ('booking_id', 'booking_name', 'added_date')
 
 
-admin.site.register(Booking, BookingAdmin)
+admin.site.register(Passenger, PassengerAdmin)
 admin.site.register(CarBookingProxy, CarBookingAdmin)
 
 

@@ -26,6 +26,7 @@ SECRET_KEY = 'o^%3sn!7pw6kafxr-%36v4bp$^jp^k@4q)9znnz@$1-84(#fhx'
 DEBUG = True
 
 ALLOWED_HOSTS = ['7dec45ea.ngrok.io', '127.0.0.1']
+LOGIN_REDIRECT_URL = 'admin/homepage'
 
 
 # Application definition
@@ -66,7 +67,8 @@ ADMIN_REORDER =[
     {'app': 'auth',
      'models': ('auth.User', 'auth.Group', 'auth.SiteAdmin', 'auth.Manager', 'auth.Moderator',
                 'auth.CustomerCare', 'auth.Customer')},
-    {'app': 'bookings', 'models': ('bookings.Booking',)},
+    {'app': 'bookings', 'models': ('bookings.Booking',),},
+    {'app': 'flightbooking', 'models': ('flightbooking.Passenger',),},
 ]
 
 
@@ -90,7 +92,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'crm.wsgi.application'
-
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases

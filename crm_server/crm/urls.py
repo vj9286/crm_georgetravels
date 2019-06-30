@@ -15,11 +15,27 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from .views import homepage
+from .views import landing_page, homepage, flight_booking_view, \
+    flight_booking_change_view, flight_delete_view, hotel_booking,\
+    booking_error, car_booking, tours_booking, cruise_booking
 
 urlpatterns = [
-    path('', homepage),
+    path('', landing_page),
+    path('homepage/', homepage),
     path('admin/', admin.site.urls),
+    path('flight_booking/', flight_booking_view),
+    path('flight_booking/<int:id>/change/', flight_booking_change_view),
+    path('flight_booking/<int:booking_id>/<int:flight_id>/delete/', flight_delete_view),
+    path('hotel_booking/<int:id>/change/', hotel_booking),
+    path('car_hire/<int:id>/change/', car_booking),
+    path('tours/<int:id>/change/', tours_booking),
+    path('cruise_hire/<int:id>/change/', cruise_booking),
+    path('hotel_booking/', booking_error),
+    path('cruise_hire/', booking_error),
+    path('car_hire/', booking_error),
+    path('tours/', booking_error),
+    path('accounts/', booking_error),
+    path('package/', booking_error),
     path('_nested_admin/', include('nested_admin.urls')),
 
 ]
