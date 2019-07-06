@@ -6,8 +6,10 @@ from bookings.models import Booking
 class CarBooking(models.Model):
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
     car_type = models.CharField(max_length=100, null=True, blank=True)
-    pickup_time = models.DateTimeField(null=True, blank=True)
-    drop_off_time = models.DateTimeField(null=True, blank=True)
+    pickup_date = models.DateField(null=True, blank=True)
+    pickup_time = models.CharField(null=True, blank=True, max_length=100)
+    drop_off_date = models.DateField(null=True, blank=True)
+    drop_off_time = models.DateField(null=True, blank=True)
     num_days = models.CharField(max_length=100, null=True, blank=True)
     car_category = models.CharField(max_length=100, null=True, blank=True)
     insurance_type = models.CharField(max_length=100, null=True, blank=True)
@@ -34,7 +36,9 @@ class CarBooking(models.Model):
     cancellation_date = models.DateField(null=True, blank=True)
     deposit_paid = models.FloatField(default=0.0)
     payment_due = models.FloatField(default=0.0)
+    payment_method = models.CharField(null=True, blank=True, max_length=100)
     balance_due_date = models.DateField(null=True, blank=True)
+    issue_date = models.DateField(null=True, blank=True)
     vat_id = models.CharField(max_length=100, null=True, blank=True)
 
 

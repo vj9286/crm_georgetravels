@@ -1,0 +1,40 @@
+from django.db import models
+from bookings.models import Booking
+# Create your models here.
+
+
+class Hotel(models.Model):
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE)
+    hotel_name = models.CharField(max_length=100, null=True, blank=True)
+    check_in = models.DateField(null=True, blank=True)
+    check_out = models.DateField(null=True, blank=True)
+    room_cat = models.CharField(null=True, max_length=100, blank=True)
+    room_type = models.CharField(null=True, max_length=100, blank=True)
+    board_basis = models.CharField(null=True, max_length=100, blank=True)
+    no_of_nights = models.FloatField(null=True, blank=True)
+    country = models.CharField(null=True, max_length=100, blank=True)
+    city = models.CharField(null=True, max_length=100, blank=True)
+    star_cat = models.CharField(null=True, max_length=100, blank=True)
+    hotel_add = models.CharField(null=True, max_length=100, blank=True)
+    contact = models.CharField(null=True, max_length=100, blank=True)
+    email = models.CharField(null=True, max_length=100, blank=True)
+    no_rooms = models.FloatField(null=True, blank=True)
+    net_per_night = models.FloatField(null=True, blank=True)
+    net_per_stay = models.FloatField(null=True, blank=True)
+    gross_per_night = models.FloatField(null=True, blank=True)
+    gross_per_stay = models.FloatField(null=True, blank=True)
+    total_net = models.FloatField(null=True, blank=True)
+    total_gross = models.FloatField(null=True, blank=True)
+    special_offer = models.FloatField(null=True, blank=True)
+    lead_guest = models.FloatField(null=True, blank=True)
+    supplier = models.CharField(max_length=100, null=True, blank=True)
+    supplier_ref = models.CharField(max_length=100, null=True, blank=True)
+    booking_date = models.DateField(null=True, blank=True)
+    booked_by = models.CharField(max_length=100, null=True, blank=True)
+    cancellation_date = models.DateField(null=True, blank=True)
+    deposit_paid = models.FloatField(default=0.0)
+    payment_due = models.FloatField(default=0.0)
+    balance_due_date = models.DateField(null=True, blank=True)
+    vat_id = models.CharField(max_length=100, null=True, blank=True)
+    payment_method = models.CharField(max_length=100, null=True, blank=True)
+

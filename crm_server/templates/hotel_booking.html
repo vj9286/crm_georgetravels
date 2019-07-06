@@ -150,18 +150,25 @@
                <li><a href="/accounts/{{name}}/change/">Accounts</a></li>
                <li><a href="/notes/{{name}}/change/">Notes</a></li>
 <!--               <li><a href="/crm/Accounts/?name={{name}}/">Cart Id:</a></li>-->
-               <li><a href="#">Booking-ID:{{flight_with_pass.0.booking.booking_id}}</a></li>
-               <li><a href="#">Booked By:{{flight_with_pass.0.booking.booking_agent}}</a></li>
+               <li><a href="#">Booking-ID:{{booking.booking_id}}</a></li>
+               <li><a href="#">Booked By:{{booking.booking_agent}}</a></li>
             </ul>
             </div>
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                <h4 class="page-header">CRM George Travels</h4>
                <ul class="nav nav-tabs addtab">
-                  <li class="active"><a data-toggle="tab" href="#home">Hotel <span class="glyphicon glyphicon-plus" onclick="addhotels();"></span></a></li>
+                  {% for x in hotels %}
+                  <li class="{% if forloop.counter == 1 %}active{% endif %}"><a data-toggle="tab" href="#home_{{forloop.counter}}">Hotel {{forloop.counter}}  <span class="glyphicon glyphicon-plus" onclick="addhotels();"></span></a></li>
+                  {% endfor %}
+
 
                </ul>
                <div class="tab-content add-tab-content">
-                  <div id="home" class="tab-pane fade in active">
+
+                  {% if flag == False %}
+                  {% for hotel in hotels %}
+                  <div id="home_{{forloop.counter}}" class="tab-pane fade in {% if forloop.counter == 1 %} active {% endif %}">
+                     <form method="POST"  id="form_{{forloop.counter}}">
                      <br>
                      <div class="panel panel-default">
                         <div class="panel-heading">Hotel Info</div>
@@ -173,7 +180,7 @@
                               <label>Hotel Name:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <input type="text" name="hotel_name" class="form-control" value="{{hotel.hotel_name}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -181,7 +188,7 @@
                               <label>Country:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="country" class="form-control" value="{{hotel.country}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -189,7 +196,7 @@
                               <label>CheckIn Date:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <input type="text" name="check_in" class="form-control" required onchange="calnumfnights(this.form.id);" value="{{hotel.check_in | date:'d F Y'}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -197,7 +204,7 @@
                               <label>City</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="city" class="form-control" value="{{hotel.city}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -205,7 +212,7 @@
                               <label>Checkout Date:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <input type="text" name="check_out" class="form-control" required onchange="calnumfnights(this.form.id);" value="{{hotel.check_out | date:'d F Y'}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -213,7 +220,12 @@
                               <label>Star Category:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <select class="form-control" name="star_cat" name="star" required >
+                                <option value="{{hotel.star_cat}} selected">{{hotel.star_cat}}</option>
+                                <option value="3 Star">3 Star</option>
+                                <option value="4 Star">4 Star</option>
+                                <option value="5 Star">5 Star</option>
+                              </select>
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -221,7 +233,7 @@
                               <label>Room Category:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <input type="text" name="room_cat" class="form-control" value="{{hotel.room_cat}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -229,7 +241,7 @@
                               <label>Hotel Address:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="hotel_add" class="form-control" value="{{hotel.hotel_add}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -237,7 +249,7 @@
                               <label>Room Type:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <input type="text" name="room_type" class="form-control" value="{{hotel.room_type}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -245,7 +257,7 @@
                               <label>Contact Number:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="contact" class="form-control" value="{{hotel.contact}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -253,7 +265,20 @@
                               <label>Board Basis:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                               <select class="form-control" name="board_basis" required>
+                                <option value="Room Only">Room Only</option>
+                                <option value="{{hotel.board_basis}}" selected>{{hotel.board_basis}}</option>
+                                <option value="Self Catering">Self Catering</option>
+                                <option value="Bed & breakfast">Bed & breakfast</option>
+                                <option value="Half Board">Half Board</option>
+                                <option value="Full Board">Full Board</option>
+                                <option value="All Exclusive">All Exclusive</option>
+                                <option value="Continental Breakfast">Continental Breakfast</option>
+                                <option value="Free Breakfast Plan">Free Breakfast Plan</option>
+                                <option value="Disney Quick-service Dinning Plan">Disney Quick-service Dinning Plan</option>
+                                <option value="Disney Dinning Plan">Disney Dinning Plan</option>
+                                <option value="Deluxe Dinning Plan">Deluxe Dinning Plan</option>
+                              </select>
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -261,7 +286,7 @@
                               <label>Email Id:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="email" class="form-control" value="{{hotel.email}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -269,7 +294,7 @@
                               <label>No of Nights:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <input type="text" name="no_of_nights" class="form-control" onkeyup="calculatenetandgross(this.form.id);" required value="{{hotel.no_of_nights}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -277,7 +302,7 @@
                               <label>No of Rooms:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="no_rooms" class="form-control" required onkeyup="calculatenetandgross(this.form.id);" value="{{hotel.no_rooms}}">
                            </div>
                         </div>
                      </div>
@@ -293,10 +318,10 @@
                                     <label>Net :</label>
                                  </div>
                                  <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4">
-                                    <input type="" name="" class="form-control" placeholder="Room cost/Night">
+                                    <input type="text" name="net_per_night" class="form-control" placeholder="Room cost/Night" onkeyup="calculatenetandgross(this.form.id);" required value="{{hotel.net_per_night}}">
                                  </div>
                                  <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4">
-                                    <input type="" name="" class="form-control" placeholder="Room cost/perstay">
+                                    <input type="text" name="net_per_stay" class="form-control" placeholder="Room cost/perstay" onkeyup="calculatenetandgross(this.form.id);" required value="{{hotel.net_per_stay}}">
                                  </div>
                                  <br>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
@@ -304,10 +329,10 @@
                                  </div>
                                  <br>
                                  <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control" placeholder="Room cost/Night">
+                                    <input type="text" name="gross_per_night" class="form-control" placeholder="Room cost/Night" onkeyup="calculatenetandgross(this.form.id);" value="{{hotel.gross_per_night}}">
                                  </div>
                                  <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control" placeholder="Room cost/Night">
+                                    <input type="text" name="gross_per_stay" class="form-control" placeholder="Room cost/Night" value="{{hotel.gross_per_stay}}">
                                  </div>
                               </div>
                            </div>
@@ -323,28 +348,28 @@
                                     <label>Total Hotel Net :</label>
                                  </div>
                                  <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control">
+                                    <input type="text" name="total_net" class="form-control" value="{{hotel.total_net}}">
                                  </div>
                                  <br>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
                                     <label>Total hotel Gross :</label>
                                  </div>
                                  <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control">
+                                    <input type="text" name="total_gross" class="form-control" value="{{hotel.total_gross}}">
                                  </div>
                                  <br>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
                                     <label>Special Offer :</label>
                                  </div>
                                  <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control">
+                                    <input type="text" name="special_offer" class="form-control" value="{{hotel.special_offer}}">
                                  </div>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
                                     <label>Lead Guest :</label>
                                  </div>
                                  <br>
                                  <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control">
+                                    <input type="text" name="lead_guest" class="form-control" value="{{hotel.lead_guest}}">
                                  </div>
                               </div>
                            </div>
@@ -362,7 +387,7 @@
                                        <label>Supplier:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="" name="">
+                                       <input type="text" name="supplier" value="{{hotel.supplier}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -370,7 +395,7 @@
                                     <label>Deposit Paid:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="" name="" >
+                                    <input type="text" name="deposit_paid" value="{{hotel.deposit_paid}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -379,7 +404,7 @@
                                        <label>Supplier Reference:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="" name="">
+                                       <input type="text" name="supplier_ref" value="{{hotel.supplier_ref}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -387,7 +412,7 @@
                                     <label>Balance Due:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="" name="" >
+                                    <input type="text" name="payment_due" value="{{hotel.payment_due}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -396,7 +421,7 @@
                                        <label>Booking Date:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="" name="">
+                                       <input type="text" name="booking_date" value="{{hotel.booking_date}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -404,7 +429,7 @@
                                     <label>Payment Method:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="" name="" >
+                                    <input type="text" name="payment_method" value="{{hotel.payment_method}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -413,7 +438,7 @@
                                        <label>Booked By:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="" name="">
+                                       <input type="text" name="booked_by" value="{{hotel.booked_by}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -421,7 +446,7 @@
                                     <label>Balance Due date:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="" name="" >
+                                    <input type="text" name="balance_due_date" value="{{hotel.balance_due_date}}" >
                                  </div>
                               </div>
                               <div class="row">
@@ -430,15 +455,15 @@
                                        <label>Cancellation Date:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="" name="">
+                                       <input type="text" name="cancellation_date" value="{{hotel.cancellation_date}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <label>Deposit Paid:</label>
+                                    <label>Vat ID:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="" name="" >
+                                    <input type="text" name="vat_id" value="{{hotel.vat_id}}">
                                  </div>
                               </div>
                               <button class="btn-mini btn-success"> Get Voucher</button>
@@ -447,8 +472,16 @@
                         </div>
                      </div>
                      <!-- Last Section end here -->
+                     <input type="hidden" name="hotel_id" value="{{hotel.id}}">
                      <center> <button class="btn btn-success">Submit</button> </center>
+
+                     </form>
+                  <center><a href="/hotel_booking/{{hotel.booking_id}}/{{hotel.id}}/delete/"><button class="btn btn-danger"> Delete</button></a></center>
+
                   </div>
+                  {% endfor %}
+                  {% endif %}
+
                   <!--first tab content ends here , second will begin from here-->
 
 
@@ -458,17 +491,59 @@
 
       <script type="text/javascript"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script type="text/javascript">
+      <script type="text/javascript">
+
+          function addcalender(){
+           $(document).ready(function(){
+            var date_input=$('input[name="check_in"],input[name="check_out"],input[name="booking_date"],input[name="issuedate"],input[name="balance_due_date"],input[name="cancellation_date"]'); //our date input has the name "date"
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            date_input.datepicker({
+              format: 'd MM yyyy',
+              container: container,
+              todayHighlight: true,
+              autoclose: true,
+            })
+          })
+         }
+
+    $(document).ready(function(){
+            var date_input=$('input[name="check_in"],input[name="check_out"],input[name="booking_date"],input[name="issuedate"],input[name="balance_due_date"],input[name="cancellation_date"]'); //our date input has the name "date"
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            date_input.datepicker({
+              format: 'd MM yyyy',
+              container: container,
+              todayHighlight: true,
+              autoclose: true,
+            })
+          })
 
       function addhotels(){
                 var length = $('.addtab li').length;
                 var lielement = "<li><a data-toggle='tab'" + "href="+ "#hotel" + (length+1) + ">" + "hotel " + (length+1) + "  <span class='glyphicon glyphicon-remove' onclick='removehotel(this.id);' id='"+(length+1)+"''></span></a></li>";
                 var current =  $('.addtab').append(lielement);
-                var getcontent = $('#home').html();
-                var fillcontent = "<div id='hotel" + (length+1) +"' class='tab-pane fade'>" + getcontent + "</div>";
+                var fillcontent = '<div id="hotel' + (length+1) +'" class="tab-pane fade">' + '<form role="form" id="form_'+(length+1)+'"  method="post" ><br> <div class="panel panel-default"> <div class="panel-heading">Hotel Info</div> </div>  <div class="container-fluid"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Hotel Name:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="hotel_name" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Country:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="country" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>CheckIn Date:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="check_in" class="form-control" required onchange="calnumfnights(this.form.id);""> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>City</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="city" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Checkout Date:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="check_out" class="form-control" required onchange="calnumfnights(this.form.id);""> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Star Category:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <select class="form-control" name="star_cat" name="star" required > <option value="3 Star">3 Star</option> <option value="4 Star">4 Star</option> <option value="5 Star">5 Star</option> </select> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Room Category:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="room_cat" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Hotel Address:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="hotel_add" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Room Type:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="room_type" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Contact Number:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="contact" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Board Basis:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <select class="form-control" name="board_basis" required> <option value="Room Only">Room Only</option> <option value="Self Catering">Self Catering</option> <option value="Bed & breakfast">Bed & breakfast</option> <option value="Half Board">Half Board</option> <option value="Full Board">Full Board</option> <option value="All Exclusive">All Exclusive</option> <option value="Continental Breakfast">Continental Breakfast</option> <option value="Free Breakfast Plan">Free Breakfast Plan</option> <option value="Disney Quick-service Dinning Plan">Disney Quick-service Dinning Plan</option> <option value="Disney Dinning Plan">Disney Dinning Plan</option> <option value="Deluxe Dinning Plan">Deluxe Dinning Plan</option> </select> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Email Id:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="email" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>No of Nights:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="no_of_nights" class="form-control" onkeyup="calculatenetandgross(this.form.id);" required> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>No of Rooms:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="no_rooms" class="form-control" required onkeyup="calculatenetandgross(this.form.id);"> </div> </div> </div>  <br><br>  <div class="panel panel-default"> <div class="panel-heading">Cost Info</div> <div class="panel-body"> <div class="container"> <div class="row"> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Net :</label> </div> <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4"> <input type="text" name="net_per_night" class="form-control" placeholder="Room cost/Night" onkeyup="calculatenetandgross(this.form.id);" required> </div> <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4"> <input type="text" name="net_per_stay" class="form-control" placeholder="Room cost/perstay" onkeyup="calculatenetandgross(this.form.id);" required> </div> <br> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Gross :</label> </div> <br> <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="gross_per_night" class="form-control" placeholder="Room cost/Night" onkeyup="calculatenetandgross(this.form.id);"> </div> <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="gross_per_stay" class="form-control" placeholder="Room cost/Night"> </div> </div> </div> </div> </div>  <div class="panel panel-default"> <div class="panel-heading">Other Costs:</div> <div class="panel-body"> <div class="container"> <div class="row"> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Total Hotel Net :</label> </div> <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="total_net" class="form-control"> </div> <br> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Total hotel Gross :</label> </div> <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="total_gross" class="form-control"> </div> <br> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Special Offer :</label> </div> <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="special_offer" class="form-control"> </div> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Lead Guest :</label> </div> <br> <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="lead_guest" class="form-control"> </div> </div> </div> </div> </div>   <div class="panel panel-default"> <div class="panel-heading">Supplier Info:</div> <div class="panel-body"> <div class="container"> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Supplier:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="supplier"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Deposit Paid:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="deposit_paid"> </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Supplier Reference:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="supplier_ref"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Balance Due:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="payment_due"> </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Booking Date:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="booking_date"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Payment Method:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="payment_method"> </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Booked By:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="booked_by"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Balance Due date:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="balance_due_date" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Cancellation Date:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="cancellation_date"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Vat ID:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="vat_id"> </div> </div> <button class="btn-mini btn-success"> Get Voucher</button> <button class="btn-mini btn-success"> Email Voucher</button> </div> </div> </div>  <center> <button class="btn btn-success">Submit</button> </center>  </form>' + "</div>";
                 $('.add-tab-content').append(fillcontent);
+                  addcalender();
+                  {% if role != "admin" and role != "superadmin" %}
+
+                  makereadonly();
+
+                  {% endif %}
 
               }
+
+            function makereadonly(){
+              $('input[name="Supplier"]').prop("readonly",true);
+              $('input[name="SupplierReference"]').prop("readonly",true);
+              $('input[name="bookingDate"]').prop("disabled",true);
+              $('input[name="BookedBy"]').prop("readonly",true);
+              $('input[name="CancelDate"]').prop("disabled",true);
+              $('input[name="balancedueDate"]').prop("disabled",true);
+              $('select[name="paymentMethod"]').prop("disabled",true);
+              $('input[name="DepositPaid"]').prop("readonly",true);
+              $('input[name="balanceDue"]').prop("readonly",true);
+              $('input[name="balancedueDate"]').prop("disabled",true);
+            }
 
               function removehotel(value){
                 var generateid = ".addtab li:nth-child(" + value + ")";
@@ -477,6 +552,73 @@
                 $(genidflight).remove();
 
               }
+
+         function calnumfnights(value){
+         var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+         var datein =  document.forms[id=value]["check_in"].value;
+         var dateout =  document.forms[id=value]["check_out"].value;
+         var day1 = datein.split(' ');
+         var date1 = parseInt(day1[0]);
+         if(date1<10){
+            date1 ="0"+date1.toString();
+         }
+         var month1 = day1[1].split(',');
+          month1 = month1[0];
+          month1= jQuery.inArray(month1, months);
+         if(month1<10)
+         {
+            month1="0"+month1.toString();
+         }
+         var year1 = parseInt(day1[2]);
+         var day2 = dateout.split(' ');
+         var date2 = parseInt(day2[0]);
+         if(date2<10){
+            date2 ="0"+date2.toString();
+         }
+         var month2 = day2[1].split(',');
+             month2 = month2[0];
+             month2= jQuery.inArray(month2, months);
+         if(month2<10)
+         {
+            month2="0"+month2.toString();
+         }
+         var year2 = parseInt(day2[2]);
+         var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+         var firstDate = new Date(year1,month1,date1);
+         var secondDate = new Date(year2,month2,date2);
+         var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime())/(oneDay)));
+         document.forms[id=value]["no_of_nights"].value=diffDays;
+         }
+
+         function calculatenetandgross(value){
+             var nights =  document.forms[id=value]["no_of_nights"].value;
+             var rooms =  document.forms[id=value]["no_rooms"].value;
+             var pernight = document.forms[id=value]["net_per_night"].value;
+             var gpernight= document.forms[id=value]["gross_per_night"].value;
+             var balancedue =  document.forms[id=value]["payment_due"].value;
+             var depositpaid =  document.forms[id=value]["deposit_paid"].value;
+             var nperstay = document.forms[id=value]["net_per_stay"].value = (parseFloat(nights) * parseFloat(pernight)||0);
+             var gperstay = document.forms[id=value]["gross_per_stay"].value = (parseFloat(nights) * parseFloat(gpernight)||0);
+             document.forms[id=value]["total_net"].value = parseFloat(nperstay) * parseFloat(rooms);
+             document.forms[id=value]["total_gross"].value = parseFloat(gperstay) * parseFloat(rooms);
+             if(balancedue==""){
+              document.forms[id=value]["payment_due"].value = 0;
+             }
+             if(depositpaid==""){
+               document.forms[id=value]["deposit_paid"].value = 0;
+             }
+         }
+
+         {% if flag == True %}
+            addhotels();
+
+            $(".addtab li").addClass("active in");
+            $('#hotel1').addClass("active in");
+            $('#1').hide();
+         {% endif %}
             </script>
+          <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
    </body>
 </html>

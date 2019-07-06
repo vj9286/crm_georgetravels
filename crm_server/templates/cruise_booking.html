@@ -150,19 +150,23 @@
                <li><a href="/accounts/{{name}}/change/">Accounts</a></li>
                <li><a href="/notes/{{name}}/change/">Notes</a></li>
 <!--               <li><a href="/crm/Accounts/?name={{name}}/">Cart Id:</a></li>-->
-               <li><a href="#">Booking-ID:{{flight_with_pass.0.booking.booking_id}}</a></li>
-               <li><a href="#">Booked By:{{flight_with_pass.0.booking.booking_agent}}</a></li>
+               <li><a href="#">Booking-ID:{{booking.booking_id}}</a></li>
+               <li><a href="#">Booked By:{{booking.booking_agent}}</a></li>
             </ul>
             </div>
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                <h4 class="page-header">CRM George Travels</h4>
                <ul class="nav nav-tabs addtab">
-                  <li class="active"><a data-toggle="tab" href="#home"> Cruise <span class="glyphicon glyphicon-plus" onclick="addcruise();"></span></a></li>
-
+                   {% for x in cruises %}
+                     <li class="{% if forloop.counter == 1 %}active{% endif %}"><a data-toggle="tab" href="#home_{{forloop.counter}}">Cruise {{forloop.counter}}  <span class="glyphicon glyphicon-plus" onclick="addcruise();"></span></a></li>
+                  {% endfor %}
                </ul>
                <div class="tab-content add-tab-content">
-                  <div id="home" class="tab-pane fade in active">
+                  {% if flag == False %}
+                  {% for cruise in cruises %}
+                  <div id="home_{{forloop.counter}}" class="tab-pane fade in {% if forloop.counter == 1 %} active {% endif %}">
                      <br>
+                     <form method="post" id="form_1">
                      <div class="panel panel-default">
                         <div class="panel-heading">Cruise Hire Info</div>
                      </div>
@@ -173,7 +177,7 @@
                               <label>Cruise Line:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <input type="text" name="cruise_line" class="form-control" value="{{cruise.cruise_line}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -181,7 +185,7 @@
                               <label>Country:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="country" class="form-control" value="{{cruise.country}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -189,7 +193,7 @@
                               <label>Cruise Name:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <input type="text" name="cruise_name" class="form-control" value="{{cruise.cruise_name}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -197,7 +201,7 @@
                               <label>City</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="city" class="form-control" value="{{cruise.city}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -205,7 +209,7 @@
                               <label>Departure port:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <input type="text" name="departure_port" class="form-control" value="{{cruise.departure_port}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -213,7 +217,7 @@
                               <label>Email Contact:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="email_contact" class="form-control" value="{{cruise.email_contact}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -221,7 +225,14 @@
                               <label>Departure Date and Time:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <div class="row">
+                              <div class="col-lg-8 col-md-3">
+                              <input type="text" name="dep_date" class="form-control" required onchange="calnumfnights(this.form.id);" value="{{cruise.dep_date| date:'d F Y'}}">
+                              </div>
+                              <div class="col-lg-4 col-md-3">
+                              <input type="text" name="dep_time" class="form-control" required placeholder="HH:MM" value="{{cruise.dep_time}}">
+                              </div>
+                              </div>
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -229,31 +240,22 @@
                               <label>Telephone Contact:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="telephone_contact" class="form-control" value="{{cruise.telephone_contact}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <label>Duration:</label>
+                              <label>Return Date and Time:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
-                           </div>
-                        </div>
-                        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                           <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <label>Return date and Time:</label>
-                           </div>
-                           <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
-                           </div>
-                        </div>
-                        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                           <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <label>Insurance Type:</label>
-                           </div>
-                           <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <div class="row">
+                              <div class="col-lg-8 col-md-3">
+                              <input type="text" name="return_date" class="form-control" required onchange="calnumfnights(this.form.id);" value="{{cruise.return_date | date:'d F Y'}}">
+                              </div>
+                              <div class="col-lg-4 col-md-3">
+                              <input type="text" name="return_time" class="form-control" required placeholder="HH:MM" value="{{cruise.return_time}}">
+                              </div>
+                              </div>
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -261,15 +263,23 @@
                               <label>Return Port:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="" class="form-control">
+                              <input type="text" name="return_port" class="form-control" value="{{cruise.return_port}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <label>No of Staterrooms:</label>
+                              <label>Duration:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="" name="" class="form-control">
+                              <input type="text" name="duration" class="form-control" onkeyup="calculatenetandgross(this.form.id);" value="{{cruise.duration}}">
+                           </div>
+                        </div>
+                        <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
+                           <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
+                              <label>Number of Staterrooms</label>
+                           </div>
+                           <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
+                              <input type="text" name="num_rooms" class="form-control" onkeyup="calculatenetandgross(this.form.id);" value="{{cruise.num_rooms}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -289,16 +299,16 @@
                                     <label>Stateroom :</label>
                                  </div>
                                  <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control" placeholder="">
+                                    <input type="text" name="state_room" class="form-control" placeholder="" value="{{cruise.state_room}}">
                                  </div>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
                                     <label>Stateroom info :</label>
                                  </div>
                                  <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4">
-                                    <input type="" name="" class="form-control" placeholder="Stateroom Type">
+                                    <input type="text" name="category" class="form-control" placeholder="Stateroom Type" value="{{cruise.category}}">
                                  </div>
                                  <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4">
-                                    <input type="" name="" class="form-control" placeholder="Stateroom Category">
+                                    <input type="text" name="type" class="form-control" placeholder="Stateroom Category" value="{{cruise.type}}">
                                  </div>
                                  <br>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
@@ -306,10 +316,10 @@
                                  </div>
                                  <br>
                                  <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control" placeholder="Meal Plan">
+                                    <input type="text" name="meal_plan" class="form-control" placeholder="Meal Plan" value="{{cruise.meal_plan}}">
                                  </div>
                                  <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control" placeholder="Number of Guest">
+                                    <input type="text" name="num_guests" class="form-control" placeholder="Number of Guest" value="{{cruise.num_guests}}">
                                  </div>
                               </div>
                            </div>
@@ -327,10 +337,10 @@
                                     <label>Net :</label>
                                  </div>
                                  <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4">
-                                    <input type="" name="" class="form-control" placeholder="Net">
+                                    <input type="text" name="net_per_night" class="form-control" placeholder="Net" onkeyup="calculatenetandgross(this.form.id);" value="{{cruise.net_per_night}}">
                                  </div>
                                  <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4">
-                                    <input type="" name="" class="form-control" placeholder="Total Net">
+                                    <input type="text" name="net_per_stay" class="form-control" placeholder="Total Net" value="{{cruise.net_per_stay}}">
                                  </div>
                                  <br>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
@@ -338,16 +348,16 @@
                                  </div>
                                  <br>
                                  <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control" placeholder="Gross">
+                                    <input type="text" name="gross_per_night" class="form-control" placeholder="Gross" onkeyup="calculatenetandgross(this.form.id);" value="{{cruise.gross_per_night}}">
                                  </div>
                                  <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control" placeholder="Total Gross">
+                                    <input type="text" name="gross_per_stay" class="form-control" placeholder="Total Gross" value="{{cruise.gross_per_stay}}">
                                  </div>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
                                     <label>Notes :</label>
                                  </div>
                                  <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="" name="" class="form-control" placeholder="Add Notes here">
+                                    <input type="text" name="notes" class="form-control" placeholder="Add Notes here" value="{{cruise.notes}}">
                                  </div>
                               </div>
                            </div>
@@ -365,7 +375,7 @@
                                        <label>Supplier:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="" name="">
+                                       <input type="text" name="supplier" value="{{cruise.supplier}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -373,7 +383,7 @@
                                     <label>Deposit Paid:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="" name="" >
+                                    <input type="text" name="deposit_paid" value="{{cruise.deposit_paid}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -382,7 +392,7 @@
                                        <label>Supplier Reference:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="" name="">
+                                       <input type="text" name="supplier_ref" value="{{cruise.supplier_ref}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -390,7 +400,7 @@
                                     <label>Balance Due:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="" name="" >
+                                    <input type="text" name="payment_due" value="{{cruise.payment_due}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -399,7 +409,7 @@
                                        <label>Booking Date:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="" name="">
+                                       <input type="text" name="booking_date" value="{{cruise.booking_date}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -407,7 +417,7 @@
                                     <label>Payment Method:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="" name="" >
+                                    <input type="text" name="payment_method" value="{{cruise.payment_method}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -416,7 +426,7 @@
                                        <label>Booked By:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="" name="">
+                                       <input type="text" name="booked_by" value="{{cruise.booked_by}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -424,7 +434,7 @@
                                     <label>Balance Due date:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="" name="" >
+                                    <input type="text" name="balance_due_date" value="{{cruise.balance_due_date}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -433,15 +443,15 @@
                                        <label>Cancellation Date:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="" name="">
+                                       <input type="text" name="cancellation_date" value="{{cruise.cancellation_date}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <label>Deposit Paid:</label>
+                                    <label>Vat ID:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="" name="" >
+                                    <input type="text" name="vat_id" value="{{cruise.vat_id}}">
                                  </div>
                               </div>
                               <button class="btn-mini btn-success"> Get Voucher</button>
@@ -450,8 +460,12 @@
                         </div>
                      </div>
                      <!-- Last Section end here -->
+                        <input type="hidden" name="cruise_id" value="{{cruise.id}}">
                      <center> <button class="btn btn-success">Submit</button> </center>
+                     </form>
                   </div>
+                  {% endfor %}
+                  {% endif %}
                   <!--first tab content ends here , second will begin from here-->
 
 
@@ -463,14 +477,38 @@
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script type="text/javascript">
 
+    function addcalender(){
+              $(document).ready(function(){
+               var date_input=$('input[name="dep_date"], input[name="return_date"], input[name="booking_date"],input[name="balance_due_date"],input[name="cancellation_date"]'); //our date input has the name "date"
+               var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+               date_input.datepicker({
+                 format: 'd MM yyyy',
+                 container: container,
+                 todayHighlight: true,
+                 autoclose: true,
+               })
+             })
+            }
+
+       $(document).ready(function(){
+               var date_input=$('input[name="dep_date"], input[name="return_date"], input[name="booking_date"],input[name="balance_due_date"],input[name="cancellation_date"]'); //our date input has the name "date"
+               var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+               date_input.datepicker({
+                 format: 'd MM yyyy',
+                 container: container,
+                 todayHighlight: true,
+                 autoclose: true,
+               })
+             })
+
       function addcruise(){
                 var length = $('.addtab li').length;
-                var lielement = "<li><a data-toggle='tab'" + "href="+ "#cruise" + (length+1) + ">" + "Cruise " + (length+1) + "  <span class='glyphicon glyphicon-remove' onclick='removecruise(this.id);' id='"+(length+1)+"''></span></a></li>";
+                var lielement = "<li><a data-toggle='tab'" + "href="+ "#cruise" + (length+1) + ">" + "Cruise " + (length+1) + "  <span class='glyphicon glyphicon-remove' onclick='removecar(this.id);' id='"+(length+1)+"''></span></a></li>";
                 var current =  $('.addtab').append(lielement);
                 var getcontent = $('#home').html();
-                var fillcontent = "<div id='cruise" + (length+1) +"' class='tab-pane fade'>" + getcontent + "</div>";
+                var fillcontent = '<div id="cruise' + (length+1) +'" class="tab-pane fade">' + '<form role="form" id="form_'+(length+1)+'"  method="post" > <br> <div class="panel panel-default"> <div class="panel-heading">Cruise Hire Info</div> </div>  <div class="container-fluid"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Cruise Line:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="cruise_line" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Country:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="country" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Cruise Name:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="cruise_name" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>City</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="city" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Departure port:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="departure_port" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Email Contact:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="email_contact" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Departure Date and Time:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="row"> <div class="col-lg-8 col-md-3"> <input type="text" name="dep_date" class="form-control" required onchange="calnumfnights(this.form.id);" value="{{car.pickup_date | date:'d F Y'}}"> </div> <div class="col-lg-4 col-md-3"> <input type="text" name="dep_time" class="form-control" required placeholder="HH:MM" value="{{car.pickup_time}}"> </div> </div> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Telephone Contact:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="telephone_contact" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Return Date and Time:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="row"> <div class="col-lg-8 col-md-3"> <input type="text" name="return_date" class="form-control" required onchange="calnumfnights(this.form.id);" value="{{car.pickup_date | date:'d F Y'}}"> </div> <div class="col-lg-4 col-md-3"> <input type="text" name="return_time" class="form-control" required placeholder="HH:MM" value="{{car.pickup_time}}"> </div> </div> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Return Port:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="return_port" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Duration:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="duration" class="form-control" onkeyup="calculatenetandgross(this.form.id);"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Number of Staterrooms</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="num_rooms" class="form-control" onkeyup="calculatenetandgross(this.form.id);"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> </div> </div>  <br><br>  <div class="panel panel-default"> <div class="panel-heading">Staterroom Info</div> <div class="panel-body"> <div class="container"> <div class="row"> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Stateroom :</label> </div> <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="state_room" class="form-control" placeholder=""> </div> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Stateroom info :</label> </div> <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4"> <input type="text" name="category" class="form-control" placeholder="Stateroom Type"> </div> <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4"> <input type="text" name="type" class="form-control" placeholder="Stateroom Category"> </div> <br> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Other Details :</label> </div> <br> <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="meal_plan" class="form-control" placeholder="Meal Plan"> </div> <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="num_guests" class="form-control" placeholder="Number of Guest"> </div> </div> </div> </div> </div>   <div class="panel panel-default"> <div class="panel-heading">Cost Info</div> <div class="panel-body"> <div class="container"> <div class="row"> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Net :</label> </div> <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4"> <input type="text" name="net_per_night" class="form-control" placeholder="Net" onkeyup="calculatenetandgross(this.form.id);"> </div> <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4"> <input type="text" name="net_per_stay" class="form-control" placeholder="Total Net"> </div> <br> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Gross :</label> </div> <br> <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="gross_per_night" class="form-control" placeholder="Gross" onkeyup="calculatenetandgross(this.form.id);"> </div> <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="gross_per_stay" class="form-control" placeholder="Total Gross"> </div> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Notes :</label> </div> <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="notes" class="form-control" placeholder="Add Notes here"> </div> </div> </div> </div> </div>  <div class="panel panel-default"> <div class="panel-heading">Supplier Info:</div> <div class="panel-body"> <div class="container"> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Supplier:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="supplier"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Deposit Paid:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="deposit_paid" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Supplier Reference:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="supplier_ref"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Balance Due:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="payment_due" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Booking Date:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="booking_date"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Payment Method:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="payment_method" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Booked By:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="booked_by"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Balance Due date:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="balance_due_date" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Cancellation Date:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="cancellation_date"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Vat ID:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="vat_id" > </div> </div> <button class="btn-mini btn-success"> Get Voucher</button> <button class="btn-mini btn-success"> Email Voucher</button> </div> </div> </div>  <center> <button class="btn btn-success">Submit</button> </center> </form>' + "</div>";
                 $('.add-tab-content').append(fillcontent);
-
+                addcalender();
               }
 
               function removecruise(value){
@@ -480,6 +518,74 @@
                 $(genidflight).remove();
 
               }
+
+         function calnumfnights(value){
+         var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+         var datein =  document.forms[id=value]["dep_date"].value;
+         var dateout =  document.forms[id=value]["return_date"].value;
+         var day1 = datein.split(' ');
+         var date1 = parseInt(day1[0]);
+         if(date1<10){
+            date1 ="0"+date1.toString();
+         }
+         var month1 = day1[1].split(',');
+          month1 = month1[0];
+          month1= jQuery.inArray(month1, months);
+         if(month1<10)
+         {
+            month1="0"+month1.toString();
+         }
+         var year1 = parseInt(day1[2]);
+         var day2 = dateout.split(' ');
+         var date2 = parseInt(day2[0]);
+         if(date2<10){
+            date2 ="0"+date2.toString();
+         }
+         var month2 = day2[1].split(',');
+             month2 = month2[0];
+             month2= jQuery.inArray(month2, months);
+         if(month2<10)
+         {
+            month2="0"+month2.toString();
+         }
+         var year2 = parseInt(day2[2]);
+         var oneDay = 24*60*60*1000; // hours*minutes*seconds*milliseconds
+         var firstDate = new Date(year1,month1,date1);
+         var secondDate = new Date(year2,month2,date2);
+         var diffDays = Math.round(Math.abs((firstDate.getTime() - secondDate.getTime())/(oneDay)));
+         document.forms[id=value]["duration"].value=diffDays;
+         }
+
+
+         function calculatenetandgross(value){
+             var nights =  document.forms[id=value]["duration"].value;
+             var rooms =  document.forms[id=value]["num_rooms"].value;
+             var pernight = document.forms[id=value]["net_per_night"].value;
+             var gpernight= document.forms[id=value]["gross_per_night"].value;
+             var balancedue =  document.forms[id=value]["payment_due"].value;
+             var depositpaid =  document.forms[id=value]["deposit_paid"].value;
+             var nperstay = document.forms[id=value]["net_per_stay"].value = (parseFloat(nights) * parseFloat(pernight)||0);
+             var gperstay = document.forms[id=value]["gross_per_stay"].value = (parseFloat(nights) * parseFloat(gpernight)||0);
+             document.forms[id=value]["net_per_stay"].value = parseFloat(nperstay) * parseFloat(rooms);
+             document.forms[id=value]["gross_per_stay"].value = parseFloat(gperstay) * parseFloat(rooms);
+             if(balancedue==""){
+              document.forms[id=value]["payment_due"].value = 0;
+             }
+             if(depositpaid==""){
+               document.forms[id=value]["deposit_paid"].value = 0;
+             }
+         }
+            {% if flag == True %}
+            addcruise();
+
+            $(".addtab li").addClass("active in");
+            $('#cruise1').addClass("active in");
+            $('#1').hide();
+            {% endif %}
             </script>
+          <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
    </body>
 </html>

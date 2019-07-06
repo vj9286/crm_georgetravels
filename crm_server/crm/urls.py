@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import landing_page, homepage, flight_booking_view, \
     flight_booking_change_view, flight_delete_view, hotel_booking,\
-    booking_error, car_booking, tours_booking, cruise_booking
+    booking_error, car_booking, tours_booking, cruise_booking, hotel_delete_view
 
 urlpatterns = [
     path('', landing_page),
@@ -26,6 +26,7 @@ urlpatterns = [
     path('flight_booking/', flight_booking_view),
     path('flight_booking/<int:id>/change/', flight_booking_change_view),
     path('flight_booking/<int:booking_id>/<int:flight_id>/delete/', flight_delete_view),
+    path('hotel_booking/<int:booking_id>/<int:hotel_id>/delete/', hotel_delete_view),
     path('hotel_booking/<int:id>/change/', hotel_booking),
     path('car_hire/<int:id>/change/', car_booking),
     path('tours/<int:id>/change/', tours_booking),
