@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'hotel_booking',
     'cruisebooking',
     'tourbooking',
+    'package',
 ]
 
 MIDDLEWARE = [
@@ -105,7 +106,7 @@ DATABASES = {
         'NAME': 'crm',
         # 'NAME': 'delivery_db_backup2',
         # 'NAME': 'delivery_db_t',
-        'USER': 'shubham',
+        'USER': 'root',
         'PASSWORD': 'shubham@8',
         'HOST': 'localhost',
         'PORT': '3306',

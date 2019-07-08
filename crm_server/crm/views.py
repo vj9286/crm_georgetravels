@@ -493,6 +493,48 @@ def cruise_booking(request, id):
 
     return render(request, template, context)
 
+@csrf_exempt
+@login_required(login_url='/admin/login')
+@transaction.atomic
+def package(request, id):
+    template = 'templates/package.html'
+    context = dict()
+    context['name'] = id
+    context['package'] = CruiseHire.objects.filter(booking_id=id)
+    context['booking'] = Booking.objects.get(id=id)
+    if context['cruises'].count() == 0:
+        context['flag'] = True
+    else:
+        context['flag'] = False
+    fields = CruiseHire._meta.fields
+    cruise_meta = CruiseHire._meta
+    cruise = dict()
+    if request.method == "POST":
+        print(request.POST)
+        for x in fields:
+            type = cruise_meta.get_field(x.name).get_internal_type()
+            if type == 'DateField':
+                cruise[x.name] = date_for_db_formatter(request.POST.get(x.name))
+            elif type == 'FloatField':
+                cruise[x.name] = check_float(request.POST.get(x.name))
+            else:
+                cruise[x.name] = request.POST.get(x.name)
+        del cruise['booking']
+        cruise_id = request.POST.get('cruise_id')
+        cruise['booking_id'] = id
+        if cruise_id is not None and cruise_id != '':
+            cruise['id'] = cruise_id
+            old_data = CruiseHire.objects.get(id=cruise_id)
+            CruiseHire.objects.filter(id=cruise_id).update(**cruise)
+            new_data = CruiseHire.objects.get(id=cruise_id)
+            generate_history(old_data, 2, request, new_data)
+        else:
+            created = CruiseHire.objects.create(**cruise)
+            generate_history(created, 1, request)
+        return redirect('/cruise_hire/{0}/change/'.format(id))
+
+    return render(request, template, context)
+
 
 def payment(request, id):
     template = 'templates/payments.html'
