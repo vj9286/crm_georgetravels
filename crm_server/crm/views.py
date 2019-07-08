@@ -13,6 +13,7 @@ from hotel_booking.models import Hotel
 from car_booking.models import CarBooking
 from django.contrib.contenttypes.models import ContentType
 from cruisebooking.models import CruiseHire
+from tourbooking.models import TourBooking
 
 
 @login_required(login_url='/admin/login')
@@ -42,7 +43,10 @@ def check_float(value):
 def date_for_db_formatter(value):
     months = {"January": '01', "February":'02', "March": '03', "April":'04', "May":'05', "June":'06', "July":'07',
               "August": '08', "September":'09', "October": '10', "November":'11', "December":'12'}
-    string = value.split(' ')
+    try:
+        string = value.split(' ')
+    except:
+        return None
     try:
         date = string[2] + '-' + months[string[1]] + '-' + string[0]
     except:
@@ -405,8 +409,6 @@ def booking_error(request):
     return render(request, template, context)
 
 
-
-
 @csrf_exempt
 @login_required(login_url='/admin/login')
 @transaction.atomic
@@ -414,6 +416,38 @@ def tours_booking(request, id):
     template = 'templates/tour_booking.html'
     context = dict()
     context['name'] = id
+    context['tours'] = TourBooking.objects.filter(booking_id=id)
+    context['booking'] = Booking.objects.get(id=id)
+    if context['tours'].count() == 0:
+        context['flag'] = True
+    else:
+        context['flag'] = False
+    fields = TourBooking._meta.fields
+    tour_meta = TourBooking._meta
+    tour = dict()
+    if request.method == "POST":
+        for x in fields:
+            type = tour_meta.get_field(x.name).get_internal_type()
+            if type == 'DateField':
+                tour[x.name] = date_for_db_formatter(request.POST.get(x.name))
+            elif type == 'FloatField':
+                tour[x.name] = check_float(request.POST.get(x.name))
+            else:
+                tour[x.name] = request.POST.get(x.name)
+        del tour['booking']
+        tour_id = request.POST.get('tour_id')
+        tour['booking_id'] = id
+        if tour_id is not None and tour_id != '':
+            tour['id'] = tour_id
+            old_data = TourBooking.objects.get(id=tour_id)
+            TourBooking.objects.filter(id=tour_id).update(**tour)
+            new_data = TourBooking.objects.get(id=tour_id)
+            generate_history(old_data, 2, request, new_data)
+        else:
+            created = TourBooking.objects.create(**tour)
+            generate_history(created, 1, request)
+        return redirect('/tours/{0}/change/'.format(id))
+
     return render(request, template, context)
 
 
@@ -457,4 +491,10 @@ def cruise_booking(request, id):
             generate_history(created, 1, request)
         return redirect('/cruise_hire/{0}/change/'.format(id))
 
+    return render(request, template, context)
+
+
+def payment(request, id):
+    template = 'templates/payments.html'
+    context = dict()
     return render(request, template, context)

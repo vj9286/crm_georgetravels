@@ -156,15 +156,17 @@
             <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
                <h4 class="page-header">CRM George Travels</h4>
                <ul class="nav nav-tabs addtab">
-                  <li class="active"><a data-toggle="tab" href="#home"> Tour <span class="glyphicon glyphicon-plus" onclick="addtour();"></span></a></li>
-
+                  {% for x in tours %}
+                  <li class="{% if forloop.counter == 1 %}active{% endif %}"><a data-toggle="tab" href="#home_{{forloop.counter}}">Tour {{forloop.counter}}  <span class="glyphicon glyphicon-plus" onclick="addtour();"></span></a></li>
+                  {% endfor %}
                </ul>
                <div class="tab-content add-tab-content">
-                  <div id="home" class="tab-pane fade in active">
-                     <form method="post" target="_blank">
-                         {% csrf_token %}
-
+                  {% if flag == False %}
+                  {% for tour in tours %}
+                  <div id="home_{{forloop.counter}}" class="tab-pane fade in {% if forloop.counter == 1 %} active {% endif %}">
                      <br>
+                     <form method="post" id="form_{{forloop.counter}}">
+
                      <div class="panel panel-default">
                         <div class="panel-heading">Tour Hire Info</div>
                      </div>
@@ -175,7 +177,10 @@
                               <label>Tour Type:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <select  required="required" name="tourtype" class="form-control"><option value="Attraction Ticket">Attraction Ticket</option><option value="One Way Transfers">One Way Transfers</option>
+                              <select  required="required" name="tour_type" class="form-control">
+                               <option value="{{tour.tour_type}}">{{tour.tour_type}}</option>
+                               <option value="Attraction Ticket">Attraction Ticket</option>
+                               <option value="One Way Transfers">One Way Transfers</option>
                                <option value="Return Transfers">Return Transfers</option>
                                <option value="Guided Tour">Guided Tour/Excursion</option></select>
                            </div>
@@ -185,7 +190,7 @@
                               <label>Country:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="country" class="form-control">
+                              <input type="text" name="country" class="form-control" value="{{tour.country}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -193,7 +198,7 @@
                               <label>Attraction Name:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="Attractionname" class="form-control">
+                              <input type="text" name="attraction_name" class="form-control" value="{{tour.attraction_name}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -201,7 +206,7 @@
                               <label>City:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="city" class="form-control">
+                              <input type="text" name="city" class="form-control" value="{{tour.city}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -209,7 +214,7 @@
                               <label>Date:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="datetimepickerpickup" class="form-control">
+                              <input type="text" name="date" class="form-control" value="{{tour.date}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -217,7 +222,7 @@
                               <label>Duration</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="duration" class="form-control">
+                              <input type="text" name="duration" class="form-control" value="{{tour.duration}}">
                            </div>
                         </div>
                         <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
@@ -225,7 +230,7 @@
                               <label>No. of Tickets:</label>
                            </div>
                            <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6">
-                              <input type="text" name="NoOfTickets" class="form-control">
+                              <input type="text" name="no_of_tickets" class="form-control" value="{{tour.no_of_tickets}}">
                            </div>
                         </div>
                      </div>
@@ -243,10 +248,10 @@
                                     <label>Net :</label>
                                  </div>
                                  <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4">
-                                    <input type="text" name="NetPerNight" class="form-control" placeholder="Net">
+                                    <input type="text" name="net_per_ticket" class="form-control" placeholder="Net" value="{{tour.net_per_ticket}}">
                                  </div>
                                  <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4">
-                                    <input type="text" name="NetTour" class="form-control" placeholder="Total Net">
+                                    <input type="text" name="total_net" class="form-control" placeholder="Total Net" value="{{tour.total_net}}">
                                  </div>
                                  <br>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
@@ -254,22 +259,22 @@
                                  </div>
                                  <br>
                                  <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="text" name="GrossPerNight" class="form-control" placeholder="Gross">
+                                    <input type="text" name="gross_per_ticket" class="form-control" placeholder="Gross" value="{{tour.gross_per_ticket}}">
                                  </div>
                                  <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="text" name="TotalCarGross" class="form-control" placeholder="Total Gross">
+                                    <input type="text" name="total_gross" class="form-control" placeholder="Total Gross" value="{{tour.total_gross}}">
                                  </div>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
                                     <label>Notes :</label>
                                  </div>
                                  <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="text" name="note" class="form-control" placeholder="Add Notes here">
+                                    <input type="text" name="notes" class="form-control" placeholder="Add Notes here" value="{{tour.notes}}">
                                  </div>
                                  <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4">
                                     <label>Lead Guest :</label>
                                  </div>
                                  <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6">
-                                    <input type="text" name="LeadGuest" class="form-control" placeholder="Add lead Guest here">
+                                    <input type="text" name="lead_guest" class="form-control" placeholder="Add lead Guest here" value="{{tour.lead_guest}}">
                                  </div>
                               </div>
                            </div>
@@ -287,7 +292,7 @@
                                        <label>Supplier:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="text" name="Supplier">
+                                       <input type="text" name="supplier" value="{{tour.supplier}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -295,7 +300,7 @@
                                     <label>Deposit Paid:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="text" name="DepositPaid" >
+                                    <input type="text" name="deposit_paid" value="{{tour.deposit_paid}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -304,7 +309,7 @@
                                        <label>Supplier Reference:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="text" name="SupplierReference">
+                                       <input type="text" name="supplier_ref" value="{{tour.supplier_ref}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -312,7 +317,7 @@
                                     <label>Balance Due:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="text" name="balanceDue" >
+                                    <input type="text" name="payment_due" value="{{tour.balanceDue}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -321,7 +326,7 @@
                                        <label>Booking Date:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="text" name="bookingDate">
+                                       <input type="text" name="booking_date" value="{{tour.booking_date}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -329,7 +334,7 @@
                                     <label>Payment Method:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="text" name="paymentMethod" >
+                                    <input type="text" name="payment_method" value="{{tour.payment_method}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -338,7 +343,7 @@
                                        <label>Booked By:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="text" name="BookedBy">
+                                       <input type="text" name="booked_by" value="{{tour.booked_by}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -346,7 +351,7 @@
                                     <label>Balance Due date:</label>
                                  </div>
                                  <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3">
-                                    <input type="text" name="balancedueDate" >
+                                    <input type="text" name="balance_due_date" value="{{tour.balance_due_date}}">
                                  </div>
                               </div>
                               <div class="row">
@@ -355,7 +360,7 @@
                                        <label>Cancellation Date:</label>
                                     </div>
                                     <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6">
-                                       <input type="text" name="CancelDate">
+                                       <input type="text" name="cancellation_date" value="{{tour.cancellation_date}}">
                                     </div>
                                  </div>
                                  <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div>
@@ -370,6 +375,8 @@
                      <center> <button class="btn btn-success" name="Submit1">Submit</button> </center>
                       </form>
                   </div>
+                  {% endfor %}
+                  {% endif %}
                   <!--first tab content ends here , second will begin from here-->
 
 
@@ -380,15 +387,38 @@
       <script type="text/javascript"></script>
       <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 <script type="text/javascript">
+   function addcalender(){
+              $(document).ready(function(){
+               var date_input=$('input[name="date"], input[name="booking_date"],input[name="balance_due_date"],input[name="cancellation_date"]'); //our date input has the name "date"
+               var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+               date_input.datepicker({
+                 format: 'd MM yyyy',
+                 container: container,
+                 todayHighlight: true,
+                 autoclose: true,
+               })
+             })
+            }
+
+    $(document).ready(function(){
+            var date_input=$('input[name="date"], input[name="booking_date"],input[name="balance_due_date"],input[name="cancellation_date"]'); //our date input has the name "date"
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            date_input.datepicker({
+              format: 'd MM yyyy',
+              container: container,
+              todayHighlight: true,
+              autoclose: true,
+            })
+          })
 
       function addtour(){
                 var length = $('.addtab li').length;
                 var lielement = "<li><a data-toggle='tab'" + "href="+ "#tour" + (length+1) + ">" + " Tour " + (length+1) + "  <span class='glyphicon glyphicon-remove' onclick='removetour(this.id);' id='"+(length+1)+"''></span></a></li>";
                 var current =  $('.addtab').append(lielement);
                 var getcontent = $('#home').html();
-                var fillcontent = "<div id='tour" + (length+1) +"' class='tab-pane fade'>" + '<form method="post" target="_blank"> {% csrf_token %} <br> <div class="panel panel-default"> <div class="panel-heading">Tour Hire Info</div> </div> <!-- Hotel Booking info --> <div class="container-fluid"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Tour Type:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <select required="required" name="tourtype" class="form-control"><option value="Attraction Ticket">Attraction Ticket</option><option value="One Way Transfers">One Way Transfers</option> <option value="Return Transfers">Return Transfers</option> <option value="Guided Tour">Guided Tour/Excursion</option></select> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Country:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="country" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Attraction Name:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="Attractionname" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>City:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="city" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Date:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="datetimepickerpickup" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Duration</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="duration" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>No. of Tickets:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="NoOfTickets" class="form-control"> </div> </div> </div> <!-- Tour Booking info ends--> <br><br> <!-- Cost Info --> <div class="panel panel-default"> <div class="panel-heading">Cost Info</div> <div class="panel-body"> <div class="container"> <div class="row"> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Net :</label> </div> <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4"> <input type="text" name="NetPerNight" class="form-control" placeholder="Net"> </div> <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4"> <input type="text" name="NetTour" class="form-control" placeholder="Total Net"> </div> <br> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Gross :</label> </div> <br> <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="GrossPerNight" class="form-control" placeholder="Gross"> </div> <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="TotalCarGross" class="form-control" placeholder="Total Gross"> </div> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Notes :</label> </div> <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="note" class="form-control" placeholder="Add Notes here"> </div> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Lead Guest :</label> </div> <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="LeadGuest" class="form-control" placeholder="Add lead Guest here"> </div> </div> </div> </div> </div> <!-- Last Section Starts here --> <div class="panel panel-default"> <div class="panel-heading">Supplier Info:</div> <div class="panel-body"> <div class="container"> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Supplier:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="Supplier"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Deposit Paid:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="DepositPaid" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Supplier Reference:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="SupplierReference"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Balance Due:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="balanceDue" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Booking Date:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="bookingDate"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Payment Method:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="paymentMethod" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Booked By:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="BookedBy"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Balance Due date:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="balancedueDate" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Cancellation Date:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="CancelDate"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> </div> <button class="btn-mini btn-success"> Get Voucher</button> <button class="btn-mini btn-success"> Email Voucher</button> </div> </div> </div> <!-- Last Section end here --> <center> <button class="btn btn-success" name="Submit'+(length+1)+'">Submit</button> </center> </form>' + "</div>";
+                var fillcontent = '<div id="tour' + (length+1) +'" class="tab-pane fade">' + '<br><form method="post"> <div class="panel panel-default"> <div class="panel-heading">Tour Hire Info</div> </div>  <div class="container-fluid"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Tour Type:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <select required="required" name="tour_type" class="form-control"><option value="Attraction Ticket">Attraction Ticket</option><option value="One Way Transfers">One Way Transfers</option> <option value="Return Transfers">Return Transfers</option> <option value="Guided Tour">Guided Tour/Excursion</option></select> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Country:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="country" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Attraction Name:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="attraction_name" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>City:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="city" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Date:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="date" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>Duration</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="duration" class="form-control"> </div> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <label>No. of Tickets:</label> </div> <div class="col-lg-6 col-sm-6 col-md-6 col-xs-6"> <input type="text" name="no_of_tickets" class="form-control"> </div> </div> </div>  <br><br>  <div class="panel panel-default"> <div class="panel-heading">Cost Info</div> <div class="panel-body"> <div class="container"> <div class="row"> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Net :</label> </div> <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4"> <input type="text" name="net_per_ticket" class="form-control" placeholder="Net"> </div> <div class="col-lg-3 col-sm-4 col-xs-4 col-md-4"> <input type="text" name="total_net" class="form-control" placeholder="Total Net"> </div> <br> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Gross :</label> </div> <br> <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="gross_per_ticket" class="form-control" placeholder="Gross"> </div> <div class="col-lg-3 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="total_gross" class="form-control" placeholder="Total Gross"> </div> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Notes :</label> </div> <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="notes" class="form-control" placeholder="Add Notes here"> </div> <div class="col-lg-4 col-sm-4 col-xs-4 col-md-4"> <label>Lead Guest :</label> </div> <div class="col-lg-6 col-sm-6 col-xs-6 col-md-6"> <input type="text" name="lead_guest" class="form-control" placeholder="Add lead Guest here"> </div> </div> </div> </div> </div>  <div class="panel panel-default"> <div class="panel-heading">Supplier Info:</div> <div class="panel-body"> <div class="container"> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Supplier:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="supplier"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Deposit Paid:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="deposit_paid" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Supplier Reference:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="supplier_ref"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Balance Due:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="balanceDue" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Booking Date:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="payment_due"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Payment Method:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="payment_method" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Booked By:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="booked_by"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <label>Balance Due date:</label> </div> <div class="col-md-3 col-lg-3 col-xs-3 col-lg-3"> <input type="text" name="balance_due_date" > </div> </div> <div class="row"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <label>Cancellation Date:</label> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"> <input type="text" name="cancellation_date"> </div> </div> <div class="col-md-6 col-lg-6 col-xs-6 col-lg-6"></div> </div> <button class="btn-mini btn-success"> Get Voucher</button> <button class="btn-mini btn-success"> Email Voucher</button> </div> </div> </div>  <center> <button class="btn btn-success" name="Submit1">Submit</button> </center> </form>' + "</div>";
                 $('.add-tab-content').append(fillcontent);
-
+               addcalender();
               }
 
               function removetour(value){
@@ -398,6 +428,18 @@
                 $(genidflight).remove();
 
               }
+              {% if flag == True %}
+               addtour();
+
+               $(".addtab li").addClass("active in");
+               $('#tour1').addClass("active in");
+               $('#1').hide();
+               {% endif %}
+
             </script>
+          <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
    </body>
 </html>
