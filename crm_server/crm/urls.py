@@ -17,7 +17,8 @@ from django.contrib import admin
 from django.urls import path, include
 from .views import landing_page, homepage, flight_booking_view, \
     flight_booking_change_view, flight_delete_view, hotel_booking,\
-    booking_error, car_booking, tours_booking, cruise_booking, hotel_delete_view, payment, package
+    booking_error, car_booking, tours_booking, cruise_booking, hotel_delete_view, payment, package, generate_history,\
+    history, profit_report, advance_profit_report, supplier_report
 
 urlpatterns = [
     path('', landing_page),
@@ -33,6 +34,10 @@ urlpatterns = [
     path('package/<int:id>/change/', package),
     path('payments/<int:id>/change/', payment),
     path('cruise_hire/<int:id>/change/', cruise_booking),
+    path('history/<int:id>/change/', history),
+    path('profit_report/', profit_report),
+    path('advance_profit_report/', advance_profit_report),
+    path('supplier_report/', supplier_report),
     path('hotel_booking/', booking_error),
     path('cruise_hire/', booking_error),
     path('car_hire/', booking_error),

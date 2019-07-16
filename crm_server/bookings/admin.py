@@ -5,6 +5,9 @@ import nested_admin
 from daterange_filter.filter import DateRangeFilter
 from car_booking.models import CarBooking
 from django.utils.safestring import mark_safe
+from django.db.models import Sum
+from package.models import Package
+
 
 # Register your models here.
 
@@ -26,7 +29,7 @@ class FlightInline(nested_admin.NestedStackedInline):
 
 
 class PassengerAdmin(admin.ModelAdmin):
-    list_display = ['booking_ref', 'booking_name', 'added_date']
+    list_display = ['booking_ref', 'booking_name', 'added_date', 'history_tracker']
     # inlines = [FlightInline]
     search_fields = ('flight__booking__booking_id', 'flight__booking__booking_name', 'first_name', 'middle_name',
                      'last_name')
@@ -45,6 +48,12 @@ class PassengerAdmin(admin.ModelAdmin):
         return '<a href="/flight_booking/{0}/change/">{1}</a>'.format(obj.flight.booking.id, obj.flight.booking.booking_id)
 
     booking_ref.allow_tags = True
+
+    @mark_safe
+    def history_tracker(self, obj):
+        return '<a href="/history/{0}/change/">Track History</a>'.format(obj.flight.booking.id)
+
+    history_tracker.allow_tags = True
 
     def booking_id(self, obj):
         return obj.booking.booking_id
@@ -73,8 +82,67 @@ class CarBookingAdmin(admin.ModelAdmin):
     fieldsets = (("Booking Details", {'fields': (('booking_id', 'booking_name', 'added_date'),)}),)
     readonly_fields = ('booking_id', 'booking_name', 'added_date')
 
+class BookingAdmin(admin.ModelAdmin):
+    list_display = ['booking_id', 'flight_net', 'flight_net_other', 'flight_gross', 'car_net', 'car_net_other',
+                    'car_gross', 'cruise_net', 'cruise_net_other', 'cruise_gross', 'tour_net', 'tour_net_other',
+                    'tour_gross', 'hotel_net', 'hotel_net_other', 'hotel_gross', 'total']
+    change_list_template = 'templates/test_report.html'
+
+    def flight_net(self, obj):
+        self.package = Package.objects.get(booking_id=obj.id)
+        return self.package.flight_net
+
+    def flight_gross(self, obj):
+        return self.package.flight_gross
+
+    def flight_net_other(self, obj):
+        return self.package.flight_net_other
+
+    def car_net(self, obj):
+        return self.package.car_net
+
+    def car_net_other(self, obj):
+        return self.package.car_net_other
+
+    def car_gross(self, obj):
+        return self.package.car_gross
+
+    def cruise_net(self, obj):
+        return self.package.cruise_net
+
+    def cruise_net_other(self, obj):
+        return self.package.cruise_net_other
+
+    def cruise_gross(self, obj):
+        return self.package.cruise_gross
+
+    def tour_net(self, obj):
+        return self.package.tour_net
+
+    def tour_net_other(self, obj):
+        return self.package.tour_net_other
+
+    def tour_gross(self, obj):
+        return self.package.tour_gross
+
+    def hotel_net(self, obj):
+        return self.package.hotel_net
+
+    def hotel_net_other(self, obj):
+        return self.package.hotel_net_other
+
+    def hotel_gross(self, obj):
+        return self.package.hotel_gross
+
+    def total(self, obj):
+        return self.package.total
+
+    def has_add_permission(self, request):
+        return False
+
 
 admin.site.register(Passenger, PassengerAdmin)
 admin.site.register(CarBookingProxy, CarBookingAdmin)
+admin.site.register(Booking, BookingAdmin)
 
 

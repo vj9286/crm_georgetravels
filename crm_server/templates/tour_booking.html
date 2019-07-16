@@ -144,7 +144,7 @@
                <li><a href="/car_hire/{{name}}/change/">Car Hire</a></li>
                <li><a href="/cruise_hire/{{name}}/change/">Cruise Hire</a></li>
                <li class="active"><a href="/tours/{{name}}/change/">Tours</a></li>
-               <li><a href='/package/{{name}}/change'>Package</a></li>
+               <li><a href='/package/{{name}}/change/'>Package</a></li>
                <li><a href="/payments/{{name}}/change/">Payment</a></li>
                <li><a href="/accounts/{{name}}/change/">Accounts</a></li>
                <li><a href="/notes/{{name}}/change/">Notes</a></li>
@@ -371,6 +371,7 @@
                            </div>
                         </div>
                      </div>
+                        <input type="hidden" name="tour_id" value="{{tour.id}}">
                      <!-- Last Section end here -->
                      <center> <button class="btn btn-success" name="Submit1">Submit</button> </center>
                       </form>

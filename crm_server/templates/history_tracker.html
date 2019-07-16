@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Bootstrap Example</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2>History Tracker</h2>
+  <p>History Tracking for Booking ID - {{booking_id}}</p>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Flight_ID</th>
+        <th>Operation</th>
+        <th>User</th>
+        <th>Remarks</th>
+        <th>Date Time</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for x in flight_histories%}
+      <tr>
+        <td>{{x.id}}</td>
+        <td>{% if x.operation == 1 %} Created {% else %} Updated{% endif %}</td>
+        <td>{{x.user}}</td>
+        <td>{{x.remarks}}</td>
+        <td>{{x.added_timestamp}}</td>
+      </tr>
+    {% endfor %}
+
+    </tbody>
+  </table>
+
+    <table class="table table-striped">
+    <thead>
+    {% if airlines %}
+      <tr>
+        <th>Airline ID</th>
+        <th>Operation</th>
+        <th>User</th>
+        <th>Remarks</th>
+        <th>Date Time</th>
+      </tr>
+    {% endif %}
+    </thead>
+    <tbody>
+    {% for x in airlines %}
+      <tr>
+        <td>{{x.id}}</td>
+        <td>{% if x.operation == 1 %} Created {% else %} Updated{% endif %}</td>
+        <td>{{x.user}}</td>
+        <td>{{x.remarks}}</td>
+        <td>{{x.added_timestamp}}</td>
+      </tr>
+    {% endfor %}
+
+    </tbody>
+  </table>
+
+
+    <table class="table table-striped">
+    <thead>
+    {% if passengers %}
+      <tr>
+        <th>Passenger ID</th>
+        <th>Operation</th>
+        <th>User</th>
+        <th>Remarks</th>
+        <th>Date Time</th>
+      </tr>
+    {% endif %}
+    </thead>
+    <tbody>
+    {% for x in passengers %}
+      <tr>
+        <td>{{x.id}}</td>
+        <td>{% if x.operation == 1 %} Created {% else %} Updated{% endif %}</td>
+        <td>{{x.user}}</td>
+        <td>{{x.remarks}}</td>
+        <td>{{x.added_timestamp}}</td>
+      </tr>
+    {% endfor %}
+
+    </tbody>
+  </table>
+</div>
+
+</body>
+</html>

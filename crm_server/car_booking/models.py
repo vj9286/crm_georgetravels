@@ -38,7 +38,6 @@ class CarBooking(models.Model):
     payment_due = models.FloatField(default=0.0)
     payment_method = models.CharField(null=True, blank=True, max_length=100)
     balance_due_date = models.DateField(null=True, blank=True)
-    issue_date = models.DateField(null=True, blank=True)
     vat_id = models.CharField(max_length=100, null=True, blank=True)
 
 

@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <title>Package</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+   </head>
+   <style type="text/css">
+      /*
+      * Base structure
+      */
+      /* Move down content because we have a fixed navbar that is 50px tall */
+      body {
+      padding-top: 5px;
+      }
+      .cost{
+      width: 25%;
+      }
+      /*
+      * Global add-ons
+      */
+      .sub-header {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      }
+      /*
+      * Top navigation
+      * Hide default border to remove 1px line.
+      */
+      .navbar-fixed-top {
+      border: 0;
+      }
+      /*
+      * Sidebar
+      */
+      /* Hide for mobile, show later */
+      .sidebar {
+      display: none;
+      }
+      @media (min-width: 768px) {
+      .sidebar {
+      -webkit-box-shadow: 10px 10px 29px 0px rgba(207,196,207,1);
+      -moz-box-shadow: 10px 10px 29px 0px rgba(207,196,207,1);
+      box-shadow: 10px 10px 29px 0px rgba(207,196,207,1);
+      position: fixed;
+      top: 0px;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+      display: block;
+      padding: 20px;
+      overflow-x: hidden;
+      overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+      background-color: #f5f5f5;
+      border-right: 1px solid #eee;
+      }
+      }
+      /* Sidebar navigation */
+      .nav-sidebar {
+      margin-right: -21px; /* 20px padding + 1px border */
+      margin-bottom: 20px;
+      margin-left: -20px;
+      }
+      .nav-sidebar > li > a {
+      padding-right: 20px;
+      padding-left: 20px;
+      }
+      .nav-sidebar > .active > a,
+      .nav-sidebar > .active > a:hover,
+      .nav-sidebar > .active > a:focus {
+      color: #fff;
+      background-color: #428bca;
+      }
+      /*
+      * Main content
+      */
+      .main {
+      }
+      @media (min-width: 768px) {
+      .main {
+      padding-right: 40px;
+      padding-left: 40px;
+      }
+      }
+      .main .page-header {
+      margin-top: 0;
+      }
+      /*
+      * Placeholder dashboard ideas
+      */
+      .nav li a{
+      text-align: center;
+      font-size: 2rem;
+      }
+      .placeholders {
+      margin-bottom: 30px;
+      text-align: center;
+      }
+      .placeholders h4 {
+      margin-bottom: 0;
+      }
+      .placeholder {
+      margin-bottom: 20px;
+      }
+      .placeholder img {
+      display: inline-block;
+      border-radius: 50%;
+      }
+      .ainfo{
+      width: 80%;
+      }
+      .pinfo{
+      width: 85%;
+      }
+      .addbtn{
+      background-color: #00B852;
+      }
+      .removebtn{
+      background-color: red;
+      }
+      .home-sidebar{
+      background-color: black;
+      color: white;
+      }
+      .home-sidebar a{
+      color: white;
+      }
+   </style>
+   <body>
+      <div class="container-fluid">
+         <div class="row">
+            <div class="col-sm-3 col-md-2 sidebar">
+              <ul class="nav nav-sidebar">
+               <li class="home-sidebar"><a href="/homepage/">Home</span></a></li>
+               <li><a href="/flight_booking/{{name}}/change/">Flight</a></li>
+               <li><a href="/hotel_booking/{{name}}/change/">Hotel</a></li>
+               <li><a href="/car_hire/{{name}}/change/">Car Hire</a></li>
+               <li><a href="/cruise_hire/{{name}}/change/">Cruise Hire</a></li>
+               <li><a href="/tours/{{name}}/change/">Tours</a></li>
+               <li class="active"><a href='/package/{{name}}/change/'>Package</a></li>
+               <li><a href="/payments/{{name}}/change/">Payment</a></li>
+               <li><a href="/accounts/{{name}}/change/">Accounts</a></li>
+               <li><a href="/notes/{{name}}/change/">Notes</a></li>
+<!--               <li><a href="/crm/Accounts/?name={{name}}/">Cart Id:</a></li>-->
+               <li><a href="#">Booking-ID:{{booking.booking_id}}</a></li>
+               <li><a href="#">Booked By:{{booking.booking_agent}}</a></li>
+            </ul>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+               <h4 class="page-header">CRM George Travels</h4>
+               <ul class="nav nav-tabs addtab">
+                  <li class="active"><a data-toggle="tab" href="#payment1">Package</a></li>
+               </ul>
+               <div class="tab-content add-tab-content">
+
+               <div id="home" class="tab-pane fade in active">
+                <br>
+                  <form role="form" id="form_1" method="post" onsubmit="return confirm('Do you really want to proceed?');" >
+
+
+                    <div class="panel panel-default">
+                      <div class="panel-heading">Package Price Details</div>
+                      <div class="panel-body">
+                        <div class="row">
+                          <div class="col-lg-2"><label>Entity</label></div>
+                          <div class="col-lg-2"><label>Net</label></div>
+                          <div class="col-lg-2"><label>Net Other</label></div>
+                          <div class="col-lg-2"><label>Gross</label></div>
+                            <br><br>
+                        </div>
+                         <div class="row">
+                          <div class="col-lg-2"><label>Flight</label></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="flight_net" value="{{package.flight_net}}" readonly></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="flight_net_other" value="{{package.flight_net_other}}"> </div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="flight_gross" value="{{package.flight_gross}}" readonly></div>
+                        </div>
+                          <br>
+                          <div class="row">
+                          <div class="col-lg-2"><label>Hotel</label></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="hotel_net" value="{{package.hotel_net}}" readonly></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="hotel_net_other" value="{{package.hotel_net_other}}"></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="hotel_gross" value="{{package.hotel_gross}}" readonly></div>
+                        </div>
+                        <br>
+                          <div class="row">
+                          <div class="col-lg-2"><label>Car Hire</label></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="car_net" value="{{package.car_net}}" readonly></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="car_net_other" value="{{package.car_net_other}}"></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="car_gross" value="{{package.car_gross}}" readonly></div>
+                        </div>
+                        <br>
+                          <div class="row">
+                          <div class="col-lg-2"><label>Cruise</label></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="cruise_net" value="{{package.cruise_net}}" readonly></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="cruise_net_other" value="{{package.cruise_net_other}}"></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="cruise_gross" value="{{package.cruise_gross}}" readonly></div>
+                        </div>
+                        <br>
+                          <div class="row">
+                          <div class="col-lg-2"><label>Tour</label></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="tour_net" value="{{package.tour_net}}" readonly></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="tour_net_other" value="{{package.tour_net_other}}"></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="tour_gross" value="{{package.tour_gross}}" readonly></div>
+                        </div>
+                        <br>
+                        <div class="row">
+                          <div class="col-lg-2"><label>Total</label></div>
+                          <div class="col-lg-2"><input type="text" class="form-control" name="total" value="{{package.total}}" readonly></div>
+                        </div>
+                          <p><span style="color:red;">Note: You can't change the net and gross of the entities, that will be auto
+                          updated based on the actual amount on their form page, the total will be auto updated once you save the page</span></p>
+                  </div>
+                </div>
+                  <br>
+                     <!-- Last Section end here -->
+                     <center> <button class="btn btn-success" value="1" name="send">Submit</button></center>
+
+                  </form>
+                  </div>
+                      <!--first tab content ends here , second will begin from here-->
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+
+
+
+      <script type="text/javascript"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script type="text/javascript">
+
+          function addcalender(){
+           $(document).ready(function(){
+            var date_input=$('input[name="duedate"]'); //our date input has the name "date"
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            date_input.datepicker({
+              format: 'd MM, yyyy',
+              container: container,
+              todayHighlight: true,
+              autoclose: true,
+            })
+          })
+         }
+
+    $(document).ready(function(){
+            var date_input=$('input[name="duedate"]'); //our date input has the name "date"
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            date_input.datepicker({
+              format: 'd MM, yyyy',
+              container: container,
+              todayHighlight: true,
+              autoclose: true,
+            })
+          })
+
+      function addpayment(){
+                var length = $('.addtab li').length;
+                var lielement = "<li><a data-toggle='tab'" + "href="+ "#payment" + (length+1) + ">" + "payment " + (length+1) + "  <span class='glyphicon glyphicon-remove' onclick='removepayment(this.id);' id='"+(length+1)+"''></span></a></li>";
+                var current =  $('.addtab').append(lielement);
+                var fillcontent = '<div id="payment' + (length+1) +'" class="tab-pane fade">' + '<br><form role="form" method="post" onsubmit="return confirm("Do you really want to proceed?");" id="form_'+(length+1)+'"> <div class="panel panel-default"> <div class="panel-heading">Payment Info</div> <div class="panel-body"> <div class="row"> <div class="col-lg-2 col-md-2 col-xs-2 col-sm-2"> <label>Address:</label> </div> <div class="col-lg-4 col-md-4 col-xs-4 col-sm-4"> <textarea class="form-control" rows="4" cols="50" name="address"></textarea> </div> <div class="col-lg-6 col-md-6 col-xs-6 col-sm-6"> <div class="col-lg-6 col-md-6 col-xs-6 col-sm-5"> <label>Post Code</label> </div> <div class="col-lg-6 col-md-6 col-xs-6 col-sm-5"> <input type="text" name="postcode" class="form-control"> </div> <div class="col-lg-6 col-md-6 col-xs-6 col-sm-5"> <label>Email</label> </div> <div class="col-lg-6 col-md-6 col-xs-6 col-sm-5"> <input type="text" name="email" class="form-control"> </div> <div class="col-lg-6 col-md-6 col-xs-6 col-sm-5"> <label>Contact Number:</label> </div> <div class="col-lg-6 col-md-6 col-xs-6 col-sm-5"> <input type="text" name="contactno" class="form-control"> </div> </div> </div> <div class="col-lg-4"> <select class="form-control" name="paymentMethod"> <option value="Credit Card">Credit Card</option> <option value="Debit Card">Debit Card</option> <option value="Bank Payment">Bank Payment</option> <option value="pay Id">pay Id</option> </select> </div> </div> </div> <div class="panel panel-default"> <div class="panel-heading">Card Details</div> <div class="panel-body"> <div class="row"> <div class="col-lg-2"><label>Name On Card</label></div> <div class="col-lg-2"><label>Expiry Date</label></div> <div class="col-lg-2"><label>Security Code</label></div> <div class="col-lg-2"><label>Amount</label></div> <div class="col-lg-2"><label>Surcharge</label></div> </div> <div class="row"> <div class="col-lg-2"><input type="text" class="form-control" name="cardname"></div> <div class="col-lg-2"> <div class="col-lg-6"> <select name="expmonth" class="form-control"> <option value="01">01</option> <option value="02">02</option> <option value="03">03</option> <option value="04">04</option> <option value="05">05</option> <option value="06">06</option> <option value="07">07</option> <option value="08">08</option> <option value="09">09</option> <option value="10">10</option> <option value="11">11</option> <option value="12">12</option> </select> </div> <div class="col-lg-6"> <select name="expyear" name="expyear" class="form-control"> <option value="2018">2018</option> <option value="2019">2019</option> <option value="2020">2020</option> <option value="2021">2021</option> <option value="2022">2022</option> <option value="2023">2023</option> <option value="2024">2024</option> <option value="2025">2025</option> <option value="2026">2026</option> <option value="2027">2027</option> <option value="2028">2028</option> <option value="2029">2029</option> <option value="2030">2030</option> <option value="2031">2031</option> <option value="2032">2032</option> <option value="2033">2033</option> <option value="2034">2034</option> <option value="2035">2035</option> <option value="2036">2036</option> <option value="2037">2037</option> <option value="2038">2038</option> <option value="2039">2039</option> <option value="2040">2040</option> </select> </div> </div> <div class="col-lg-2"><input type="text" class="form-control" name="cvc"></div> <div class="col-lg-2"><input type="text" class="form-control" name="amount"></div> <div class="col-lg-2"><input type="text" class="form-control" name="surcharge"></div> </div> <br> <div class="row"> <div class="col-lg-2"><label>Card Number:</label></div> <div class="col-lg-2"><input type="text" class="form-control" name="1st4" onkeyup="sendnext(this.form.id,this.name);"maxlength="4"></div> <div class="col-lg-2"><input type="text" class="form-control" name="2nd4" onkeyup="sendnext(this.form.id,this.name);"maxlength="4"></div> <div class="col-lg-2"><input type="text" class="form-control" name="3rd4" onkeyup="sendnext(this.form.id,this.name);"maxlength="4"></div> <div class="col-lg-2"><input type="text" class="form-control" name="4th4" onkeyup="sendnext(this.form.id,this.name);"maxlength="4"></div> </div> <br> <div class="row"> <div class="col-lg-2"><label>Amount Paid</label></div> <div class="col-lg-2"><input type="text" class="form-control" name="amountpaid"></div> </div> <div class="row"> <div class="col-lg-2"><label>Balance Due</label></div> <div class="col-lg-2"><input type="text" class="form-control" name="amountdue"></div> </div> <div class="row"> <div class="col-lg-2"><label>Due Date</label></div> <div class="col-lg-2"><input type="text" class="form-control" name="duedate"></div> </div> <div class="row"><div class="col-lg-2"><label>Just Save</label></div><div class="col-lg-2"><input type="checkbox" value="on"  name="justsave"></div></div> </div> </div> <br> <!-- Last Section end here --> <center> <button class="btn btn-success" name="send" value="'+ (length+1)+'" >Send Forward</button> <button class="btn btn-success" name="back">Send Back</button></center> </form>' + "</div>";
+                $('.add-tab-content').append(fillcontent);
+                  addcalender();
+              }
+
+              function removepayment(value){
+                var generateid = ".addtab li:nth-child(" + value + ")";
+                $(generateid).remove();
+                var genidflight = "#payment" + value;
+                $(genidflight).remove();
+
+              }
+              function sendnext(value,name){
+                var temp = document.forms[id=value][name].value;
+                name = name.substr(0,1);
+                if(temp.length>=4){
+                if(name==1){
+                  var next = (parseInt(name)+1)+"nd4";
+                }else if(name==2){
+                   var next = (parseInt(name)+1)+"rd4";
+                }else if (name==3){
+                   var next = (parseInt(name)+1)+"th4";
+                }
+              }
+                var formname = "#" + value + " input[name='"+next+"']";
+                $(formname).focus();
+              }
+
+
+
+
+            </script>
+             <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+   <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+   </body>

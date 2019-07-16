@@ -14,6 +14,32 @@ from car_booking.models import CarBooking
 from django.contrib.contenttypes.models import ContentType
 from cruisebooking.models import CruiseHire
 from tourbooking.models import TourBooking
+from package.models import Package
+from django.db.models import  Sum
+from payments.models import Payments
+
+
+def update_package(instance):
+    try:
+        package = Package.objects.get(booking_id=instance.booking_id)
+    except:
+        package = Package.objects.create(booking_id=instance.booking_id)
+
+    package.flight_net = Flight.objects.filter(booking_id=instance.booking_id).aggregate(net=Sum('net'))['net'] or 0
+    package.flight_gross = Flight.objects.filter(booking_id=instance.booking_id).aggregate(gross=Sum('gross'))['gross'] or 0
+    package.car_net = CarBooking.objects.filter(booking_id=instance.booking_id).aggregate(total_net=Sum('total_net'))['total_net'] or 0
+    package.car_gross = CarBooking.objects.filter(booking_id=instance.booking_id).aggregate(total_gross=Sum('total_gross'))['total_gross'] or 0
+    package.hotel_net = Hotel.objects.filter(booking_id=instance.booking_id).aggregate(total_net=Sum('total_net'))['total_net'] or 0
+    package.hotel_gross = Hotel.objects.filter(booking_id=instance.booking_id).aggregate(total_gross=Sum('total_gross'))['total_gross'] or 0
+    package.tour_net = TourBooking.objects.filter(booking_id=instance.booking_id).aggregate(total_net=Sum('total_net'))['total_net'] or 0
+    package.tour_gross = TourBooking.objects.filter(booking_id=instance.booking_id).aggregate(total_gross=Sum('total_gross'))['total_gross'] or 0
+    package.cruise_net = CruiseHire.objects.filter(booking_id=instance.booking_id).aggregate(net_per_stay=Sum('net_per_stay'))['net_per_stay'] or 0
+    package.cruise_gross = CruiseHire.objects.filter(booking_id=instance.booking_id).aggregate(gross_per_stay=Sum('gross_per_stay'))['gross_per_stay'] or 0
+    package.total = package.flight_net + package.flight_gross + package.flight_net_other + package.car_net + \
+                    package.car_gross + package.car_net_other + package.tour_net + package.tour_gross + \
+                    package.tour_net_other + package.hotel_net + package.hotel_net_other + package.hotel_gross + \
+                    package.cruise_net + package.cruise_net_other + package.cruise_gross
+    package.save()
 
 
 @login_required(login_url='/admin/login')
@@ -137,6 +163,7 @@ def flight_booking_view(request):
             flight_booking['baggage_allowance'] = request.POST.get('BaggageAllowance')
             flight_booking['supplier'] = request.POST.get('ASupplier')
             flight = Flight.objects.create(**flight_booking)
+            update_package(flight)
             generate_history(flight, 1, request)
             for i in range(0, len(request.POST.getlist('airline'))):
                 airline = dict()
@@ -231,9 +258,11 @@ def flight_booking_change_view(request, id):
             old_data = Flight.objects.get(id=flight_id)
             Flight.objects.filter(id=flight_id).update(**flight_booking)
             new_data = Flight.objects.get(id=flight_id)
+            update_package(new_data)
             generate_history(old_data, 2, request, new_data)
         else:
             flight = Flight.objects.create(**flight_booking)
+            update_package(flight)
             generate_history(flight, 1, request)
         exclude_airline = request.POST.getlist('airline_id')
         for i in range(0, len(request.POST.getlist('airline'))):
@@ -260,7 +289,7 @@ def flight_booking_change_view(request, id):
         exclude_list = request.POST.getlist('passenger_id')
         for i in range(0, len(request.POST.getlist('fname'))):
             passenger = dict()
-            passenger['flight_id'] = flight_id
+            passenger['flight_id'] = flight_id if flight_id is not None else flight.id
             passenger['title'] = request.POST.getlist('title')[i]
             passenger['first_name'] = request.POST.getlist('fname')[i]
             passenger['middle_name'] = request.POST.getlist('mname')[i]
@@ -333,9 +362,11 @@ def hotel_booking(request, id):
             old_date = Hotel.objects.get(id=hotel_id)
             Hotel.objects.filter(id=hotel_id).update(**hotel)
             new_data = Hotel.objects.get(id=hotel_id)
+            update_package(new_data)
             generate_history(old_date, 2, request, new_data)
         else:
             created = Hotel.objects.create(**hotel)
+            update_package(created)
             generate_history(created, 1, request)
         return redirect('/hotel_booking/{0}/change/'.format(id))
     return render(request, template, context)
@@ -372,7 +403,6 @@ def car_booking(request, id):
     car_meta = CarBooking._meta
     car = dict()
     if request.method == "POST":
-        print(request.POST)
         for x in fields:
             type = car_meta.get_field(x.name).get_internal_type()
             if type == 'DateField':
@@ -389,9 +419,11 @@ def car_booking(request, id):
             old_data = CarBooking.objects.get(id=car_id)
             CarBooking.objects.filter(id=car_id).update(**car)
             new_data = CarBooking.objects.get(id=car_id)
+            update_package(new_data)
             generate_history(old_data, 2, request, new_data)
         else:
             created = CarBooking.objects.create(**car)
+            update_package(created)
             generate_history(created, 1, request)
         return redirect('/car_hire/{0}/change/'.format(id))
 
@@ -442,9 +474,11 @@ def tours_booking(request, id):
             old_data = TourBooking.objects.get(id=tour_id)
             TourBooking.objects.filter(id=tour_id).update(**tour)
             new_data = TourBooking.objects.get(id=tour_id)
+            update_package(new_data)
             generate_history(old_data, 2, request, new_data)
         else:
             created = TourBooking.objects.create(**tour)
+            update_package(created)
             generate_history(created, 1, request)
         return redirect('/tours/{0}/change/'.format(id))
 
@@ -485,13 +519,16 @@ def cruise_booking(request, id):
             old_data = CruiseHire.objects.get(id=cruise_id)
             CruiseHire.objects.filter(id=cruise_id).update(**cruise)
             new_data = CruiseHire.objects.get(id=cruise_id)
+            update_package(new_data)
             generate_history(old_data, 2, request, new_data)
         else:
             created = CruiseHire.objects.create(**cruise)
+            update_package(created)
             generate_history(created, 1, request)
         return redirect('/cruise_hire/{0}/change/'.format(id))
 
     return render(request, template, context)
+
 
 @csrf_exempt
 @login_required(login_url='/admin/login')
@@ -500,43 +537,232 @@ def package(request, id):
     template = 'templates/package.html'
     context = dict()
     context['name'] = id
-    context['package'] = CruiseHire.objects.filter(booking_id=id)
+    try:
+        context['package'] = Package.objects.get(booking_id=id)
+    except:
+        template = 'templates/error.html'
+        context = dict()
+        context['error_msg'] = 'Please create a booking in order to visit this page'
+        return render(request,template, context)
     context['booking'] = Booking.objects.get(id=id)
-    if context['cruises'].count() == 0:
+    if request.method == "POST":
+        context['package'].flight_net_other = check_float(request.POST.get('flight_net_other'))
+        context['package'].car_net_other = check_float(request.POST.get('car_net_other'))
+        context['package'].tour_net_other = check_float(request.POST.get('tour_net_other'))
+        context['package'].cruise_net_other = check_float(request.POST.get('cruise_net_other'))
+        context['package'].hotel_net_other = check_float(request.POST.get('hotel_net_other'))
+        old_data = Package.objects.get(id=context['package'].id)
+        context['package'].save()
+        new_data = Package.objects.get(id=context['package'].id)
+        generate_history(old_data, 2, request, new_data)
+        update_package(new_data)
+        return redirect('/package/{0}/change/'.format(id))
+    return render(request, template, context)
+
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+@transaction.atomic
+def payment(request, id):
+    template = 'templates/payments.html'
+    context = dict()
+    context['name'] = id
+    context['payments'] = Payments.objects.filter(booking_id=id)
+    context['booking'] = Booking.objects.get(id=id)
+    if context['payments'].count() == 0:
         context['flag'] = True
     else:
         context['flag'] = False
-    fields = CruiseHire._meta.fields
-    cruise_meta = CruiseHire._meta
-    cruise = dict()
+    fields = Payments._meta.fields
+    payment_meta = Payments._meta
+    payment = dict()
     if request.method == "POST":
         print(request.POST)
         for x in fields:
-            type = cruise_meta.get_field(x.name).get_internal_type()
+            type = payment_meta.get_field(x.name).get_internal_type()
             if type == 'DateField':
-                cruise[x.name] = date_for_db_formatter(request.POST.get(x.name))
+                payment[x.name] = date_for_db_formatter(request.POST.get(x.name))
             elif type == 'FloatField':
-                cruise[x.name] = check_float(request.POST.get(x.name))
+                payment[x.name] = check_float(request.POST.get(x.name))
             else:
-                cruise[x.name] = request.POST.get(x.name)
-        del cruise['booking']
-        cruise_id = request.POST.get('cruise_id')
-        cruise['booking_id'] = id
-        if cruise_id is not None and cruise_id != '':
-            cruise['id'] = cruise_id
-            old_data = CruiseHire.objects.get(id=cruise_id)
-            CruiseHire.objects.filter(id=cruise_id).update(**cruise)
-            new_data = CruiseHire.objects.get(id=cruise_id)
+                payment[x.name] = request.POST.get(x.name)
+        del payment['booking']
+        del payment['added_date']
+        payment_id = request.POST.get('payment_id')
+        payment['booking_id'] = id
+        if payment_id is not None and payment_id != '':
+            payment['id'] = payment_id
+            old_data = Payments.objects.get(id=payment_id)
+            Payments.objects.filter(id=payment_id).update(**payment)
+            new_data = Payments.objects.get(id=payment_id)
             generate_history(old_data, 2, request, new_data)
         else:
-            created = CruiseHire.objects.create(**cruise)
+            created = Payments.objects.create(**payment)
+            update_package(created)
             generate_history(created, 1, request)
-        return redirect('/cruise_hire/{0}/change/'.format(id))
+        return redirect('/payments/{0}/change/'.format(id))
+    return render(request, template, context)
+
+
+def history(request, id):
+    template = 'templates/history_tracker.html'
+    context = dict()
+    flights = Flight.objects.filter(booking_id=id).values_list('id', flat=True)
+    passengers = Passenger.objects.filter(flight__booking_id=id).values_list('id', flat=True)
+    airlines = Airline.objects.filter(flight__booking_id=id).values_list('id', flat=True)
+    carbooking = CarBooking.objects.filter(booking_id=id).values_list('id', flat=True)
+    context['flight_histories'] = History.objects.filter(content_type__app_label='flightbooking', content_type__model='Flight',
+                                              object_id__in=flights)
+    context['passengers'] = History.objects.filter(content_type__app_label='flightbooking',
+                                                         content_type__model='passenger',
+                                                         object_id__in=passengers)
+    context['airlines'] = History.objects.filter(content_type__app_label='flightbooking',
+                                                 content_type__model='airline',
+                                                 object_id__in=airlines)
+
+    context['booking_id'] = Booking.objects.get(id=id).booking_id
+    return render(request, template, context)
+
+
+def calculate_profit(package):
+    temp = dict()
+    temp['total_net'] = package.flight_net  + package.car_net  + package.tour_net + package.hotel_net + \
+                                package.cruise_net
+    temp['total_net_other'] = package.flight_net_other + package.car_net_other + package.tour_net_other +\
+                               package.hotel_net_other + package.cruise_net_other
+    temp['total_gross'] = package.flight_gross + package.car_gross + package.tour_gross + \
+                          package.hotel_gross + package.cruise_gross
+    temp['updated_profit'] = temp['total_gross'] - temp['total_net_other']
+    return temp
+
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+def profit_report(request):
+    template = 'templates/profit_report.html'
+    context = dict()
+    context['username'] = request.user
+    context['title'] = SITE_HEADER
+    bookings = Booking.objects.all()
+    booking = dict()
+    for count, x in enumerate(bookings):
+        booking[count] = dict()
+        booking[count]['booking'] = x
+        booking[count]['flights'] = Flight.objects.filter(booking=x).order_by('id')
+        booking[count]['package'] = calculate_profit(Package.objects.get(booking=x))
+        booking[count]['dep_date'] = Airline.objects.filter(flight_id=booking[count]['flights'][0].id)[0].dep_date
+    context['booking'] = booking
+    if request.method == "POST":
+        start_date = date_for_db_formatter(request.POST.get('from'))
+        end_date = date_for_db_formatter(request.POST.get('to'))
+        bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+        print(end_date, start_date, bookings)
+        booking = dict()
+        for count, x in enumerate(bookings):
+            booking[count] = dict()
+            booking[count]['booking'] = x
+            booking[count]['flights'] = Flight.objects.filter(booking=x).order_by('id')
+            booking[count]['package'] = calculate_profit(Package.objects.get(booking=x))
+            booking[count]['dep_date'] = Airline.objects.filter(flight_id=booking[count]['flights'][0].id)[0].dep_date
+        context['booking'] = booking
 
     return render(request, template, context)
 
 
-def payment(request, id):
-    template = 'templates/payments.html'
+@csrf_exempt
+@login_required(login_url='/admin/login')
+def advance_profit_report(request):
+    template = 'templates/advance_profit_report.html'
     context = dict()
+    context['username'] = request.user
+    context['title'] = SITE_HEADER
+    bookings = Booking.objects.all()
+    booking = dict()
+    for count, x in enumerate(bookings):
+        booking[count] = dict()
+        booking[count]['booking'] = x
+        booking[count]['flights'] = Flight.objects.filter(booking=x).order_by('id')
+        booking[count]['package'] = calculate_profit(Package.objects.get(booking=x))
+        booking[count]['airline'] = Airline.objects.filter(flight_id=booking[count]['flights'][0].id)[0]
+        print(booking[count]['airline'])
+    context['booking'] = booking
+    if request.method == "POST":
+        try:
+            start_date = date_for_db_formatter(request.POST.get('from'))
+            end_date = date_for_db_formatter(request.POST.get('to'))
+            bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                              added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+            booking = dict()
+            for count, x in enumerate(bookings):
+                booking[count] = dict()
+                booking[count]['booking'] = x
+                booking[count]['flights'] = Flight.objects.filter(booking=x).order_by('id')
+                booking[count]['package'] = calculate_profit(Package.objects.get(booking=x))
+                booking[count]['airline'] = Airline.objects.filter(flight_id=booking[count]['flights'][0].id)[0]
+            context['booking'] = booking
+        except Exception as e:
+            return HttpResponse("Please enter from date as well as end date")
+
+    return render(request, template, context)
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+def supplier_report(request):
+    template = 'templates/supplier_report.html'
+    context = dict()
+    context['username'] = request.user
+    context['title'] = SITE_HEADER
+    if request.method == "POST":
+        start_date = date_for_db_formatter(request.POST.get('from'))
+        end_date = date_for_db_formatter(request.POST.get('to'))
+        bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+    else:
+        bookings = Booking.objects.all()
+    booking = dict()
+    count = 0
+    for x in bookings:
+        hotels = Hotel.objects.filter(booking=x).order_by('id')
+        tours = TourBooking.objects.filter(booking=x).order_by('id')
+        cruises = CruiseHire.objects.filter(booking=x).order_by('id')
+        cars = CarBooking.objects.filter(booking=x).order_by('id')
+        flights= Flight.objects.filter(booking_id=x)
+        if tours.count() > 0:
+            for tour in tours:
+                booking[count] = dict()
+                booking[count]['details'] = tour
+                booking[count]['booking'] = x
+                booking[count]['flights'] = flights
+                booking[count]['supplier_net'] = check_float(tour.deposit_paid) + check_float(tour.payment_due)
+                booking[count]['dep_date'] = Airline.objects.filter(flight_id=flights[0].id)[0].dep_date
+                count += 1
+        if cruises.count() > 0:
+            for cruise in cruises:
+                booking[count] = dict()
+                booking[count]['details'] = cruise
+                booking[count]['booking'] = x
+                booking[count]['flights'] = flights
+                booking[count]['supplier_net'] = check_float(cruise.deposit_paid) + check_float(cruise.payment_due)
+                booking[count]['dep_date'] = Airline.objects.filter(flight_id=flights[0].id)[0].dep_date
+                count += 1
+        if hotels.count() > 0:
+            for hotel in hotels:
+                booking[count] = dict()
+                booking[count]['details'] = hotel
+                booking[count]['booking'] = x
+                booking[count]['flights'] = flights
+                booking[count]['supplier_net'] = check_float(hotel.deposit_paid) + check_float(hotel.payment_due)
+                booking[count]['dep_date'] = Airline.objects.filter(flight_id=flights[0].id)[0].dep_date
+                count += 1
+        if cars.count() > 0:
+            for car in cars:
+                booking[count] = dict()
+                booking[count]['details'] = car
+                booking[count]['booking'] = x
+                booking[count]['flights'] = flights
+                booking[count]['supplier_net'] = check_float(car.deposit_paid) + check_float(car.payment_due)
+                booking[count]['dep_date'] = Airline.objects.filter(flight_id=flights[0].id)[0].dep_date
+                count += 1
+    context['booking'] = booking
     return render(request, template, context)

@@ -14,9 +14,16 @@
     -moz-box-shadow: 10px 10px 30px 0px rgba(191,191,191,1);
     box-shadow: 10px 10px 30px 0px rgba(191,191,191,1);
     }
+    th {
+    background-color:black;
+    color:yellow;
+    border: 1px solid yellow;
+    }
+    td{
+    border:1px solid yellow;}
   </style>
 </head>
-<body>
+<body style="zoom:80%;">
 
 <nav class="navbar navbar-inverse" style="background-color:#417690;border:0px solid white;">
   <div class="container-fluid">
@@ -36,7 +43,7 @@
   </div>
 </nav>
 
-<div class="container">
+<div class="container-fluid">
   <h2>{{title}}</h2>
   <div class="panel panel-default">
     <div class="panel-heading">{{booking_title}}</div>
@@ -61,9 +68,84 @@
         </select>
       </td>
       </button>
+        <br><br>
+        <div class="row" style="margin-left:1%;">
+            <form class="form-inline" method="POST">
+                <div class="form-group">
+                  <label for="from">From:</label>
+                  <input type="text" class="form-control" id="from" placeholder="Start Date" name="from" required>
+                </div>
+                <div class="form-group">
+                  <label for="to">To:</label>
+                  <input type="text" class="form-control" id="to" placeholder="End Date" name="to" required>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
   </div>
 </div>
+
 </div>
+
+<div class="container-fluid">
+  <h3>Admin Profit Report</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Booking Name</th>
+        <th>Booking ID</th>
+        <th>Invoice No.</th>
+        <th>Booking Date</th>
+        <th>Departure Date</th>
+        <th>Booking Type</th>
+        <th>Gross</th>
+        <th>Net</th>
+        <th>NetOther</th>
+        <th>Updated Profit</th>
+        <th>Agent Name</th>
+        <th>Booking Status</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for x, y in booking.items %}
+      <tr>
+        <td>{{y.booking.booking_name}}</td>
+        <td>{{y.booking.booking_id}}</td>
+        <td></td>
+        <td>{{y.booking.added_date}}</td>
+        <td>{{y.dep_date}}</td>
+        <td>{{y.flights.0.booking_type}}</td>
+        <td>{{y.package.total_gross}}</td>
+        <td>{{y.package.total_net}}</td>
+        <td>{{y.package.total_net_other}}</td>
+        <td>{{y.package.updated_profit}}</td>
+        <td>{{y.booking.booking_agent}}</td>
+        <td>Ticketing</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+
+<script>
+    $(document).ready(function(){
+            var date_input=$('input[name="from"], input[name="to"]'); //our date input has the name "date"
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            date_input.datepicker({
+              format: 'd MM yyyy',
+              container: container,
+              todayHighlight: true,
+              autoclose: true,
+            })
+          })
+
+
+</script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
 
 </body>
 </html>

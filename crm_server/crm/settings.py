@@ -25,7 +25,7 @@ SECRET_KEY = 'o^%3sn!7pw6kafxr-%36v4bp$^jp^k@4q)9znnz@$1-84(#fhx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['f1f20549.ngrok.io', '127.0.0.1']
+ALLOWED_HOSTS = ['d1bda26f.ngrok.io', '127.0.0.1', '*']
 LOGIN_REDIRECT_URL = 'admin/homepage'
 
 
@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'cruisebooking',
     'tourbooking',
     'package',
+    'payments',
 ]
 
 MIDDLEWARE = [
@@ -137,13 +138,14 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 
 USE_L10N = True
 
 USE_TZ = True
+
 
 
 # Static files (CSS, JavaScript, Images)

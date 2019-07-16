@@ -1,6 +1,6 @@
 from django.db import models
 from bookings.models import Booking
-
+from django.db.models.signals import post_save
 # Create your models here.
 
 
@@ -93,4 +93,5 @@ class Passenger(models.Model):
 
     def __str__(self):
         return self.first_name.__str__()
+
 

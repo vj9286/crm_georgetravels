@@ -21,4 +21,5 @@ class Package(models.Model):
     tour_net_other = models.FloatField(default=0.0)
     tour_gross = models.FloatField(default=0.0)
     total = models.FloatField(default=0.0)
+    created_date = models.DateTimeField(auto_now_add=True)
 
