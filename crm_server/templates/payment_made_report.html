@@ -58,13 +58,13 @@
       <td style="padding-right: 10px;">
         <select onchange="location = this.options[this.selectedIndex].value;" style="color:black; height: 25px; font-size: 14px; width: 100px;" class="formcontrol"  name="reportsagent" id="reportsagent">
         <option selected="selected" disabled="disabled" >Reports</option>
-          <option value="/profit_report/">Profit Report</option>
+         <option value="/profit_report/">Profit Report</option>
           <option value="/advance_profit_report/"> Detailed Profit Report</option>
-          <option value="/supplier_report">Supplier</option>
+          <option value="/supplier_report">Supplier Report</option>
           <option value="/payment_made_report/">Payment Made Report</option>
-          <option value="http://18.219.89.244:8000/crm/admin/paymentreceivedreport">Payment Received Report</option>
-          <option value="http://18.219.89.244:8000/crm/superadmin/Taps">Full TAPS Report</option>
-          <option value="http://18.219.89.244:8000/crm/superadmin/TapsPartial">TAPS Report</option>
+          <option value="/product_report/">Product Report</option>
+          <option value="/accounts_report/">Accounts Report</option>
+          <option value="/payment_received_report/">Payment received Report</option>
         </select>
       </td>
       </button>
@@ -88,7 +88,7 @@
 </div>
 
 <div class="container-fluid">
-  <h3>Admin Profit Report</h3>
+  <h3>Payment Made Report</h3>
   <table class="table table-striped">
     <thead>
       <tr>
@@ -97,13 +97,14 @@
         <th>Invoice No.</th>
         <th>Booking Date</th>
         <th>Departure Date</th>
-        <th>Booking Type</th>
         <th>Supplier Name</th>
-        <th>Supplier Net</th>
-        <th>Supplier Net Paid</th>
-        <th>Supplier Balance due</th>
-        <th>Balance Due Date</th>
+        <th>Supplier Reference</th>
         <th>Payment Method</th>
+        <th>Payment Date</th>
+        <th>Supplier Net</th>
+        <th>Supplier Paid</th>
+        <th>Supplier Balance</th>
+        <th>Balance Due Date</th>
         <th>Cancellation Date</th>
         <th>Vat ID</th>
       </tr>
@@ -116,14 +117,15 @@
         <td></td>
         <td>{{y.booking.added_date}}</td>
         <td>{{y.dep_date}}</td>
-        <td>{{y.flights.0.booking_type}}</td>
-        <td>{{y.details.supplier}}</td>
-        <td>{{y.supplier_net}}</td>
-        <td>{{y.details.deposit_paid}}</td>
-        <td>{{y.details.payment_due}}</td>
-        <td>{{y.details.balance_due_date}}</td>
+        <td>{{y.details.supplier_name}}</td>
+        <td>{{y.supplier_reference}}</td>
         <td>{{y.details.payment_method}}</td>
-        <td>{{y.booking.booking_agent}}</td>
+        <td>{{y.details.payment_date}}</td>
+        <td>{{y.details.supplier_amount}}</td>
+        <td>{{y.details.supplier_paid}}</td>
+        <td>{{y.details.supplier_balance}}</td>
+        <td>{{y.details.supplier_balance_date}}</td>
+        <td>{{y.details.cancellation_date}}</td>
         <td>{{y.details.vat_id}}</td>
       </tr>
     {% endfor %}

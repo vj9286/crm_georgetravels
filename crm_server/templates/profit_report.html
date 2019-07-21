@@ -58,13 +58,13 @@
       <td style="padding-right: 10px;">
         <select onchange="location = this.options[this.selectedIndex].value;" style="color:black; height: 25px; font-size: 14px; width: 100px;" class="formcontrol"  name="reportsagent" id="reportsagent">
         <option selected="selected" disabled="disabled" >Reports</option>
-          <option value="/profit_report/">Profit Report</option>
+         <option value="/profit_report/">Profit Report</option>
           <option value="/advance_profit_report/"> Detailed Profit Report</option>
-          <option value="/supplier_report/">Supplier</option>
+          <option value="/supplier_report">Supplier Report</option>
           <option value="/payment_made_report/">Payment Made Report</option>
-          <option value="http://18.219.89.244:8000/crm/admin/paymentreceivedreport">Payment Received Report</option>
-          <option value="http://18.219.89.244:8000/crm/superadmin/Taps">Full TAPS Report</option>
-          <option value="http://18.219.89.244:8000/crm/superadmin/TapsPartial">TAPS Report</option>
+          <option value="/product_report/">Product Report</option>
+          <option value="/accounts_report/">Accounts Report</option>
+          <option value="/payment_received_report/">Payment received Report</option>
         </select>
       </td>
       </button>
@@ -88,7 +88,7 @@
 </div>
 
 <div class="container-fluid">
-  <h3>Admin Profit Report</h3>
+  <h3>Profit Report</h3>
   <table class="table table-striped">
     <thead>
       <tr>

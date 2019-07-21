@@ -88,23 +88,20 @@
 </div>
 
 <div class="container-fluid">
-  <h3>Supplier Report</h3>
+  <h3>Product Report</h3>
   <table class="table table-striped">
     <thead>
       <tr>
         <th>Booking Name</th>
         <th>Booking ID</th>
-        <th>Invoice No.</th>
         <th>Booking Date</th>
-        <th>Departure Date</th>
-        <th>Booking Type</th>
-        <th>Supplier Name</th>
+        <th>Client Name</th>
+        <th>Product Name</th>
+        <th>Supplier</th>
+        <th>Supplier Reference</th>
         <th>Supplier Net</th>
-        <th>Supplier Net Paid</th>
-        <th>Supplier Balance due</th>
-        <th>Balance Due Date</th>
-        <th>Payment Method</th>
-        <th>Cancellation Date</th>
+        <th>Duration</th>
+        <th>Units</th>
         <th>Vat ID</th>
       </tr>
     </thead>
@@ -113,17 +110,14 @@
       <tr>
         <td>{{y.booking.booking_name}}</td>
         <td>{{y.booking.booking_id}}</td>
-        <td></td>
         <td>{{y.booking.added_date}}</td>
-        <td>{{y.dep_date}}</td>
-        <td>{{y.flights.0.booking_type}}</td>
+        <td>{{y.client_name}}</td>
+        <td>{{y.product}} - {{y.details.attraction_name}} {{y.details.cruise_name}} {{y.details.car_type}} {{y.details.hotel_name}}</td>
         <td>{{y.details.supplier}}</td>
+        <td>{{y.details.supplier_ref}}</td>
         <td>{{y.supplier_net}}</td>
-        <td>{{y.details.deposit_paid}}</td>
-        <td>{{y.details.payment_due}}</td>
-        <td>{{y.details.balance_due_date}}</td>
-        <td>{{y.details.payment_method}}</td>
-        <td>{{y.details.cancellation_date}}</td>
+        <td>{{y.details.no_of_nights}} {{y.details.duration}} {{y.details.num_days}}</td>
+        <td>{{y.details.no_rooms}} {{y.details.no_of_tickets}} {{y.details.num_cars}}</td>
         <td>{{y.details.vat_id}}</td>
       </tr>
     {% endfor %}

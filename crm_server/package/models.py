@@ -21,5 +21,10 @@ class Package(models.Model):
     tour_net_other = models.FloatField(default=0.0)
     tour_gross = models.FloatField(default=0.0)
     total = models.FloatField(default=0.0)
+    insurance = models.FloatField(default=0.0)
+    atol = models.FloatField(default=0.0)
+    sfc = models.FloatField(default=0.0)
+    commission = models.FloatField(default=0.0)
+    admin_charges = models.FloatField(default=0.0)
     created_date = models.DateTimeField(auto_now_add=True)
 

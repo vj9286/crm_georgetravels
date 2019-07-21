@@ -25,7 +25,7 @@ SECRET_KEY = 'o^%3sn!7pw6kafxr-%36v4bp$^jp^k@4q)9znnz@$1-84(#fhx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['d1bda26f.ngrok.io', '127.0.0.1', '*']
+ALLOWED_HOSTS = ['e0039a53.ngrok.io ', '127.0.0.1', '*']
 LOGIN_REDIRECT_URL = 'admin/homepage'
 
 

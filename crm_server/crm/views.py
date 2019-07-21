@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from bookings.models import Booking, History
+from bookings.models import Booking, History, PaymentReceived, PaymentsMade, Notes
 from flightbooking.models import Flight, Airline, Passenger
 import datetime
 from hotel_booking.models import Hotel
@@ -15,7 +15,7 @@ from django.contrib.contenttypes.models import ContentType
 from cruisebooking.models import CruiseHire
 from tourbooking.models import TourBooking
 from package.models import Package
-from django.db.models import  Sum
+from django.db.models import Sum
 from payments.models import Payments
 
 
@@ -551,6 +551,10 @@ def package(request, id):
         context['package'].tour_net_other = check_float(request.POST.get('tour_net_other'))
         context['package'].cruise_net_other = check_float(request.POST.get('cruise_net_other'))
         context['package'].hotel_net_other = check_float(request.POST.get('hotel_net_other'))
+        context['package'].insurance = check_float(request.POST.get('insurance'))
+        context['package'].atol = check_float(request.POST.get('atol'))
+        context['package'].commission = check_float(request.POST.get('commission'))
+        context['package'].admin_charges = check_float(request.POST.get('admin_charges'))
         old_data = Package.objects.get(id=context['package'].id)
         context['package'].save()
         new_data = Package.objects.get(id=context['package'].id)
@@ -623,6 +627,96 @@ def history(request, id):
     context['booking_id'] = Booking.objects.get(id=id).booking_id
     return render(request, template, context)
 
+
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+@transaction.atomic
+def accounts(request, id):
+    template = 'templates/accounts.html'
+    context = dict()
+    context['name'] = id
+    context['payments_received'] = PaymentReceived.objects.filter(booking_id=id)
+    context['total_gross'] = PaymentReceived.objects.filter(booking_id=id).aggregate(
+                                            gross=Sum('gross_amount'))['gross'] or 0
+    context['total_surcharge'] = PaymentReceived.objects.filter(booking_id=id).aggregate(
+                                            surcharge_total=Sum('surcharge'))["surcharge_total"] or 0
+    context['total_supplier_paid'] = PaymentsMade.objects.filter(booking_id=id).aggregate(
+                                    supplied_paid_total=Sum('supplier_paid'))["supplied_paid_total"] or 0
+    context["total_supplier_due"] = PaymentsMade.objects.filter(booking_id=id).aggregate(
+                                    supplier_balance_total=Sum('supplier_balance'))["supplier_balance_total"] or 0
+    context['payments_made'] = PaymentsMade.objects.filter(booking_id=id)
+    context['booking'] = Booking.objects.get(id=id)
+    if request.method == "POST":
+        print(request.POST)
+        if request.POST.get('payment_received_form') == "payment_received_form":
+            fields = PaymentReceived._meta.fields
+            payment_rec_meta = PaymentReceived._meta
+            for i in range(0, len(request.POST.getlist('date_fund_received'))):
+                payment_rec = dict()
+                for x in fields:
+                    type = payment_rec_meta.get_field(x.name).get_internal_type()
+                    if type == 'DateField':
+                        payment_rec[x.name] = date_for_db_formatter(request.POST.getlist(x.name)[i])
+                    elif type == 'FloatField':
+                        payment_rec[x.name] = check_float(request.POST.getlist(x.name)[i])
+                    else:
+                        if x.name=="booking":
+                            payment_rec[x.name] = None
+                        else:
+                            try:
+                                payment_rec[x.name] = request.POST.getlist(x.name)[i]
+                            except:
+                                payment_rec[x.name] = None
+                del payment_rec['booking']
+                payment_rec['booking_id'] = id
+                if payment_rec['id'] is not None and payment_rec['id'] != '':
+                    PaymentReceived.objects.filter(id=payment_rec['id']).update(**payment_rec)
+                else:
+                    PaymentReceived.objects.create(**payment_rec)
+
+        elif request.POST.get('payment_made_form') == "payment_made_form":
+            fields = PaymentsMade._meta.fields
+            payment_made_meta = PaymentsMade._meta
+            for i in range(0, len(request.POST.getlist('supplier_name'))):
+                payment_made = dict()
+                for x in fields:
+                    type = payment_made_meta.get_field(x.name).get_internal_type()
+                    if type == 'DateField':
+                        payment_made[x.name] = date_for_db_formatter(request.POST.getlist(x.name)[i])
+                    elif type == 'FloatField':
+                        print(type, x.name)
+                        request.POST.getlist(x.name)
+                        payment_made[x.name] = check_float(request.POST.getlist(x.name)[i])
+                    else:
+                        if x.name == "booking":
+                            payment_made[x.name] = None
+                        else:
+                            try:
+                                payment_made[x.name] = request.POST.getlist(x.name)[i]
+                            except:
+                                payment_made[x.name] = None
+                del payment_made['booking']
+                payment_made['booking_id'] = id
+                if payment_made['id'] is not None and payment_made['id'] != '':
+                    PaymentsMade.objects.filter(id=payment_made['id']).update(**payment_made)
+                else:
+                    PaymentsMade.objects.create(**payment_made)
+
+    return render(request, template, context=context)
+
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+def notes(request, id):
+    template = 'templates/notes.html'
+    context = dict()
+    context['name'] = id
+    context['notes'] = Notes.objects.filter(booking_id=id)
+    if request.method == "POST":
+        if request.POST.get('content') != '':
+            Notes.objects.create(booking_id=id, content=request.POST.get('content'))
+    return render(request, template, context)
 
 def calculate_profit(package):
     temp = dict()
@@ -766,3 +860,180 @@ def supplier_report(request):
                 count += 1
     context['booking'] = booking
     return render(request, template, context)
+
+
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+def payment_made_report(request):
+    template = 'templates/payment_made_report.html'
+    context = dict()
+    context['username'] = request.user
+    context['title'] = SITE_HEADER
+    if request.method == "POST":
+        start_date = date_for_db_formatter(request.POST.get('from'))
+        end_date = date_for_db_formatter(request.POST.get('to'))
+        bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+    else:
+        bookings = Booking.objects.all()
+    booking = dict()
+    count = 0
+    for x in bookings:
+        pay_made = PaymentsMade.objects.filter(booking_id=x.id)
+        if pay_made.count() > 0:
+            for pay in pay_made:
+                booking[count] = dict()
+                booking[count]['details'] = pay
+                booking[count]['dep_date'] = Airline.objects.filter(flight_id=Flight.objects.filter(booking_id=x.id)[0])[0].dep_date
+                booking[count]['booking'] = x
+                count += 1
+
+    context['booking'] = booking
+    return render(request, template, context)
+
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+def payment_received_report(request):
+    template = 'templates/payment_received_report.html'
+    context = dict()
+    context['username'] = request.user
+    context['title'] = SITE_HEADER
+    if request.method == "POST":
+        start_date = date_for_db_formatter(request.POST.get('from'))
+        end_date = date_for_db_formatter(request.POST.get('to'))
+        bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+    else:
+        bookings = Booking.objects.all()
+    booking = dict()
+    count = 0
+    for x in bookings:
+        pay_rec = PaymentReceived.objects.filter(booking_id=x.id)
+        if pay_rec.count() > 0:
+            for pay in pay_rec:
+                booking[count] = dict()
+                booking[count]['details'] = pay
+                booking[count]['booking'] = x
+                count += 1
+
+    context['booking'] = booking
+    return render(request, template, context)
+
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+def product_report(request):
+    template = 'templates/product_report.html'
+    context = dict()
+    context['username'] = request.user
+    context['title'] = SITE_HEADER
+    if request.method == "POST":
+        start_date = date_for_db_formatter(request.POST.get('from'))
+        end_date = date_for_db_formatter(request.POST.get('to'))
+        bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+    else:
+        bookings = Booking.objects.all()
+    booking = dict()
+    count = 0
+    for x in bookings:
+        hotels = Hotel.objects.filter(booking=x).order_by('id')
+        tours = TourBooking.objects.filter(booking=x).order_by('id')
+        cruises = CruiseHire.objects.filter(booking=x).order_by('id')
+        cars = CarBooking.objects.filter(booking=x).order_by('id')
+        flights= Flight.objects.filter(booking_id=x)
+        if tours.count() > 0:
+            for tour in tours:
+                booking[count] = dict()
+                booking[count]['product'] = 'tour'
+                booking[count]['details'] = tour
+                booking[count]['booking'] = x
+                booking[count]['flights'] = flights
+                booking[count]['supplier_net'] = check_float(tour.deposit_paid) + check_float(tour.payment_due)
+                booking[count]['client_name'] = Passenger.objects.filter(flight_id=flights[0].id)[0].first_name
+                count += 1
+        if cruises.count() > 0:
+            for cruise in cruises:
+                booking[count] = dict()
+                booking[count]['product'] = 'cruise'
+                booking[count]['details'] = cruise
+                booking[count]['booking'] = x
+                booking[count]['flights'] = flights
+                booking[count]['supplier_net'] = check_float(cruise.deposit_paid) + check_float(cruise.payment_due)
+                booking[count]['client_name'] = Passenger.objects.filter(flight_id=flights[0].id)[0].dep_date
+                count += 1
+        if hotels.count() > 0:
+            for hotel in hotels:
+                booking[count] = dict()
+                booking[count]['product'] = 'hotel'
+                booking[count]['details'] = hotel
+                booking[count]['booking'] = x
+                booking[count]['flights'] = flights
+                booking[count]['supplier_net'] = check_float(hotel.deposit_paid) + check_float(hotel.payment_due)
+                booking[count]['client_name'] = Passenger.objects.filter(flight_id=flights[0].id)[0].first_name
+                count += 1
+        if cars.count() > 0:
+            for car in cars:
+                booking[count] = dict()
+                booking[count]['product'] = 'car'
+                booking[count]['details'] = car
+                booking[count]['booking'] = x
+                booking[count]['flights'] = flights
+                booking[count]['supplier_net'] = check_float(car.deposit_paid) + check_float(car.payment_due)
+                booking[count]['client_name'] = Passenger.objects.filter(flight_id=flights[0].id)[0].first_name
+                count += 1
+    context['booking'] = booking
+    return render(request, template, context)
+
+
+
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+def accounts_report(request):
+    template = 'templates/accounts_report.html'
+    context = dict()
+    context['username'] = request.user
+    context['title'] = SITE_HEADER
+    if request.method == "POST":
+        start_date = date_for_db_formatter(request.POST.get('from'))
+        end_date = date_for_db_formatter(request.POST.get('to'))
+        bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+    else:
+        bookings = Booking.objects.all()
+    booking = dict()
+    count = 0
+    for x in bookings:
+        pay_rec = PaymentReceived.objects.filter(booking_id=x.id)
+        if pay_rec.count() > 0:
+            for pay in pay_rec:
+                package_obj = Package.objects.get(booking_id=x.id)
+                booking[count] = dict()
+                booking[count]['booking_date'] = x.added_date
+                booking[count]['customer_name'] = Passenger.objects.filter(flight_id=Flight.objects.filter(booking_id=x.id)[0])[0].first_name
+                booking[count]['payment_received'] = PaymentReceived.objects.filter(booking_id=x.id).aggregate(
+                    gross=Sum('gross_amount'))['gross'] or 0
+                booking[count]['booking'] = x
+                booking[count]['total_net'] = calculate_profit(Package.objects.get(booking=x))['total_net']
+                booking[count]['total_gross'] = calculate_profit(Package.objects.get(booking=x))['total_gross']
+                booking[count]['no_of_passengers'] = Passenger.objects.filter(
+                    flight_id__in=Flight.objects.filter(booking_id=x.id).values_list('id', flat=True)).count()
+                booking[count]['vat_id'] = "Test"
+                booking[count]['package'] = package_obj
+                booking[count]['transaction_charge'] = PaymentReceived.objects.filter(booking_id=x.id).aggregate(
+                    transaction_charge=Sum('surcharge'))['transaction_charge'] or 0
+                count += 1
+
+    context['booking'] = booking
+    return render(request, template, context)
+
+# @csrf_exempt
+# @login_required(login_url='/admin/login')
+# def payment_made_report(request):
+#     template = 'templates/payment_made_received.html'
+#     context = dict()
+#     context['username'] = request.user
+#     context['title'] = SITE_HEADER

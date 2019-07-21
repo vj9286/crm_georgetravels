@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+      <meta name="description" content="">
+      <meta name="author" content="">
+      <title>Accounts - George Travels</title>
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+   </head>
+   <style type="text/css">
+      /*
+      * Base structure
+      */
+      /* Move down content because we have a fixed navbar that is 50px tall */
+      body {
+      padding-top: 5px;
+      }
+      .cost{
+      width: 25%;
+      }
+      /*
+      * Global add-ons
+      */
+      .sub-header {
+      padding-bottom: 10px;
+      border-bottom: 1px solid #eee;
+      }
+      /*
+      * Top navigation
+      * Hide default border to remove 1px line.
+      */
+      .navbar-fixed-top {
+      border: 0;
+      }
+      /*
+      * Sidebar
+      */
+      /* Hide for mobile, show later */
+      .sidebar {
+      display: none;
+      }
+      @media (min-width: 768px) {
+      .sidebar {
+      -webkit-box-shadow: 10px 10px 29px 0px rgba(207,196,207,1);
+      -moz-box-shadow: 10px 10px 29px 0px rgba(207,196,207,1);
+      box-shadow: 10px 10px 29px 0px rgba(207,196,207,1);
+      position: fixed;
+      top: 0px;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+      display: block;
+      padding: 20px;
+      overflow-x: hidden;
+      overflow-y: auto; /* Scrollable contents if viewport is shorter than content. */
+      background-color: #f5f5f5;
+      border-right: 1px solid #eee;
+      }
+      }
+      /* Sidebar navigation */
+      .nav-sidebar {
+      margin-right: -21px; /* 20px padding + 1px border */
+      margin-bottom: 20px;
+      margin-left: -20px;
+      }
+      .nav-sidebar > li > a {
+      padding-right: 20px;
+      padding-left: 20px;
+      }
+      .nav-sidebar > .active > a,
+      .nav-sidebar > .active > a:hover,
+      .nav-sidebar > .active > a:focus {
+      color: #fff;
+      background-color: #428bca;
+      }
+      /*
+      * Main content
+      */
+      .main {
+      }
+      @media (min-width: 768px) {
+      .main {
+      padding-right: 40px;
+      padding-left: 40px;
+      }
+      }
+      .main .page-header {
+      margin-top: 0;
+      }
+      /*
+      * Placeholder dashboard ideas
+      */
+      .nav li a{
+      text-align: center;
+      font-size: 2rem;
+      }
+      .placeholders {
+      margin-bottom: 30px;
+      text-align: center;
+      }
+      .placeholders h4 {
+      margin-bottom: 0;
+      }
+      .placeholder {
+      margin-bottom: 20px;
+      }
+      .placeholder img {
+      display: inline-block;
+      border-radius: 50%;
+      }
+      .ainfo{
+      width: 80%;
+      }
+      .pinfo{
+      width: 85%;
+      }
+      .addbtn{
+      background-color: #00B852;
+      }
+      .removebtn{
+      background-color: red;
+      }
+      .home-sidebar{
+      background-color: black;
+      color: white;
+      }
+      .home-sidebar a{
+      color: white;
+      }
+   </style>
+   <body>
+      <div class="container-fluid">
+         <div class="row">
+            <div class="col-sm-3 col-md-2 sidebar">
+               <ul class="nav nav-sidebar">
+                  <li class="home-sidebar"><a href="/homepage/">Home</span></a></li>
+                  <li><a href="/flight_booking/{{name}}/change/">Flight</a></li>
+                  <li><a href="/hotel_booking/{{name}}/change/">Hotel</a></li>
+                  <li><a href="/car_hire/{{name}}/change/">Car Hire</a></li>
+                  <li><a href="/cruise_hire/{{name}}/change/">Cruise Hire</a></li>
+                  <li><a href="/tours/{{name}}/change/">Tours</a></li>
+                  <li><a href='/package/{{name}}/change/'>Package</a></li>
+                  <li><a href="/payments/{{name}}/change/">Payment</a></li>
+                  <li class="active"><a href="/accounts/{{name}}/change/">Accounts</a></li>
+                  <li><a href="/notes/{{name}}/change/">Notes</a></li>
+                  <!--               <li><a href="/crm/Accounts/?name=4/">Cart Id:</a></li>-->
+                  <li><a href="#">Booking-ID:GT-VZV07190478</a></li>
+                  <li><a href="#">Booked By:abhi</a></li>
+               </ul>
+            </div>
+            <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+               <h4 class="page-header">CRM George Travels</h4>
+               <ul class="nav nav-tabs addtab">
+                  <li class="active"><a data-toggle="tab" href="#home_1">NOTES</a></li>
+               </ul>
+               <div class="tab-content add-tab-content">
+                  <div id="home_1" class="tab-pane fade in  active ">
+                    <form method="POST">
+                    <div class="form-group">
+                        <br><br>
+                      <label for="note">Add Note:</label>
+                      <textarea class="form-control" rows="5" name="content"></textarea><br><br>
+                        <center><button class="btn btn-success"> Submit </button></center>
+                    </div>
+                  </form>
+                      {% for note in notes %}
+                      <p> {{forloop.counter}}. {{note.content}}</p>
+                      {% endfor %}
+               </div>
+
+               <!--first tab content ends here , second will begin from here-->
+            </div>
+         </div>
+      </div>
+      <script type="text/javascript"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+      <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+      <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+   </body>
+</html>
