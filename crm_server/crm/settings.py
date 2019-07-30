@@ -25,8 +25,8 @@ SECRET_KEY = 'o^%3sn!7pw6kafxr-%36v4bp$^jp^k@4q)9znnz@$1-84(#fhx'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['e0039a53.ngrok.io ', '127.0.0.1', '*']
-LOGIN_REDIRECT_URL = 'admin/homepage'
+ALLOWED_HOSTS = ['9e4e2a16.ngrok.io', '127.0.0.1', '*']
+LOGIN_REDIRECT_URL = 'admin/homepage/'
 
 
 # Application definition
@@ -152,3 +152,4 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
 STATIC_URL = '/static/'
+LOGOUT_REDIRECT_URL = '/homepage/'

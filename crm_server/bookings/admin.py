@@ -45,7 +45,8 @@ class PassengerAdmin(admin.ModelAdmin):
 
     @mark_safe
     def booking_ref(self, obj):
-        return '<a href="/flight_booking/{0}/change/">{1}</a>'.format(obj.flight.booking.id, obj.flight.booking.booking_id)
+        return '<a href="/flight_booking/{0}/change/">{1}</a>'.format(obj.flight.booking.id,
+                                                                      obj.flight.booking.booking_id)
 
     booking_ref.allow_tags = True
 
@@ -60,6 +61,18 @@ class PassengerAdmin(admin.ModelAdmin):
 
     def added_date(self, obj):
         return obj.flight.added_date
+
+    def get_queryset(self, request):
+        group = request.user.groups.values_list('name', flat=True)
+        qs = super(PassengerAdmin, self).get_queryset(request)
+        if request.user.is_superuser:
+            return qs
+        elif 'Agent' in group:
+            qs = qs.filter(flight__booking__booking_agent=request.user)
+            return qs
+        else:
+            return qs
+
 
 
 

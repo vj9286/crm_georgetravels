@@ -354,10 +354,10 @@
                                     <select class="form-control" name="agegroup" onchange ="calculatenetandgross(this.form.id);">
                                        <option selected>AgeGroup</option>
                                        <option value="{{p.age_group}}" selected>{{p.age_group}}</option>
-                                       <option value="Adult" >Adult</option>
-                                       <option value="Youth" >Youth</option>
-                                       <option value="Child" >Child</option>
-                                       <option value="Infant">Infant</option>
+                                       {% if p.age_group != "Adult" %}<option value="Adult" >Adult</option>{% endif %}
+                                       {% if p.age_group != "Youth" %}<option value="Youth" >Youth</option>{% endif %}
+                                       {% if p.age_group != "Child" %}<option value="Child" >Child</option>{% endif %}
+                                       {% if p.age_group != "Infant" %}<option value="Infant">Infant</option>{% endif %}
                                     </select>
                                  </td>
                               </tr>

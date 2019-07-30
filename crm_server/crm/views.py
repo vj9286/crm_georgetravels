@@ -17,6 +17,7 @@ from tourbooking.models import TourBooking
 from package.models import Package
 from django.db.models import Sum
 from payments.models import Payments
+from django.contrib.auth.models import User
 
 
 def update_package(instance):
@@ -737,6 +738,7 @@ def profit_report(request):
     context = dict()
     context['username'] = request.user
     context['title'] = SITE_HEADER
+    context['users'] = User.objects.all().values_list('id', 'username')
     bookings = Booking.objects.all()
     booking = dict()
     for count, x in enumerate(bookings):
@@ -749,9 +751,15 @@ def profit_report(request):
     if request.method == "POST":
         start_date = date_for_db_formatter(request.POST.get('from'))
         end_date = date_for_db_formatter(request.POST.get('to'))
-        bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
-                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
-        print(end_date, start_date, bookings)
+        if request.POST.get('agent') != "All":
+            agent = request.POST.get('agent')
+            bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                              added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=1),
+                                              booking_agent_id=agent)
+        else:
+            bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                              added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=1))
+
         booking = dict()
         for count, x in enumerate(bookings):
             booking[count] = dict()
@@ -786,7 +794,7 @@ def advance_profit_report(request):
             start_date = date_for_db_formatter(request.POST.get('from'))
             end_date = date_for_db_formatter(request.POST.get('to'))
             bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
-                                              added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+                                              added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=1))
             booking = dict()
             for count, x in enumerate(bookings):
                 booking[count] = dict()
@@ -811,7 +819,7 @@ def supplier_report(request):
         start_date = date_for_db_formatter(request.POST.get('from'))
         end_date = date_for_db_formatter(request.POST.get('to'))
         bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
-                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=1))
     else:
         bookings = Booking.objects.all()
     booking = dict()
@@ -874,7 +882,7 @@ def payment_made_report(request):
         start_date = date_for_db_formatter(request.POST.get('from'))
         end_date = date_for_db_formatter(request.POST.get('to'))
         bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
-                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=1))
     else:
         bookings = Booking.objects.all()
     booking = dict()
@@ -904,7 +912,7 @@ def payment_received_report(request):
         start_date = date_for_db_formatter(request.POST.get('from'))
         end_date = date_for_db_formatter(request.POST.get('to'))
         bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
-                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=1))
     else:
         bookings = Booking.objects.all()
     booking = dict()
@@ -933,7 +941,7 @@ def product_report(request):
         start_date = date_for_db_formatter(request.POST.get('from'))
         end_date = date_for_db_formatter(request.POST.get('to'))
         bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
-                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=1))
     else:
         bookings = Booking.objects.all()
     booking = dict()
@@ -1001,7 +1009,7 @@ def accounts_report(request):
         start_date = date_for_db_formatter(request.POST.get('from'))
         end_date = date_for_db_formatter(request.POST.get('to'))
         bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
-                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d"))
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=1))
     else:
         bookings = Booking.objects.all()
     booking = dict()
@@ -1025,6 +1033,46 @@ def accounts_report(request):
                 booking[count]['package'] = package_obj
                 booking[count]['transaction_charge'] = PaymentReceived.objects.filter(booking_id=x.id).aggregate(
                     transaction_charge=Sum('surcharge'))['transaction_charge'] or 0
+                count += 1
+
+    context['booking'] = booking
+    return render(request, template, context)
+
+
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+def taps_report(request):
+    template = 'templates/taps_report.html'
+    context = dict()
+    context['username'] = request.user
+    context['title'] = SITE_HEADER
+    if request.method == "POST":
+        start_date = date_for_db_formatter(request.POST.get('from'))
+        end_date = date_for_db_formatter(request.POST.get('to'))
+        bookings = Booking.objects.filter(added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                          added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d")+ datetime.timedelta(days=1))
+    else:
+        bookings = Booking.objects.all()
+    booking = dict()
+    count = 0
+    for x in bookings:
+        pay_rec = PaymentReceived.objects.filter(booking_id=x.id)
+        pay_made = PaymentsMade.objects.filter(booking_id=x.id)
+        if pay_rec.count() > 0:
+                package_obj = Package.objects.get(booking_id=x.id)
+                booking[count] = dict()
+                booking[count]['date_fund_received']=pay_rec.values_list('date_fund_received', flat=True)
+                booking[count]['payment_method']=pay_rec.values_list('payment_method', flat=True)
+                booking[count]['booking_date'] = x.added_date
+                booking[count]['customer_name'] = Passenger.objects.filter(flight_id=Flight.objects.filter(booking_id=x.id)[0])[0].first_name
+                booking[count]['payment_received'] = PaymentReceived.objects.filter(booking_id=x.id).aggregate(
+                    gross=Sum('gross_amount'))['gross'] or 0
+                booking[count]['payment_made'] = pay_made.aggregate(supplier_paid_total=Sum('supplier_paid'))['supplier_paid_total'] or 0
+                booking[count]['supplier_name'] = pay_made.values_list('supplier_name', flat=True)
+                booking[count]['supplier_pay_method'] = pay_made.values_list('payment_method', flat=True)
+                booking[count]['supplier_amount'] = pay_made.aggregate(supplier_amount_total=Sum('supplier_amount'))['supplier_amount_total']
+                booking[count]['package'] = package_obj
                 count += 1
 
     context['booking'] = booking

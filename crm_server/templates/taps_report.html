@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>{{title}}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+  <style>
+    .shadow-button{
+    -webkit-box-shadow: 10px 10px 30px 0px rgba(191,191,191,1);
+    -moz-box-shadow: 10px 10px 30px 0px rgba(191,191,191,1);
+    box-shadow: 10px 10px 30px 0px rgba(191,191,191,1);
+    }
+    th {
+    background-color:black;
+    color:yellow;
+    border: 1px solid yellow;
+    }
+    td{
+    border:1px solid yellow;}
+  </style>
+</head>
+<body style="zoom:80%;">
+
+<nav class="navbar navbar-inverse" style="background-color:#417690;border:0px solid white;">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../" style="color:#C1D255;">{{title}}</a>
+    </div>
+
+    <ul class="nav navbar-nav navbar-right">
+       <li class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" href="#" style="color:white;">{{username | title}}<span class="caret"></span></a>
+        <ul class="dropdown-menu">
+          <li><a href="/admin/password_change" >Change Password</a></li>
+          <li><a href="#">Role : {{role}}</a></li>
+          <li><a href="/admin/logout">logout</a></li>
+        </ul>
+      </li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container-fluid">
+  <h2>{{title}}</h2>
+  <div class="panel panel-default">
+    <div class="panel-heading">{{booking_title}}</div>
+    <div class="panel-body">
+      <a href="../flight_booking"><button type="button" class="btn btn-default shadow-button">Create Booking</button></a>
+      <a href="/admin/auth/user/add/"><button type="button" class="btn btn-default shadow-button">Create User Account</button></a>
+      <a href="/admin/flightbooking/passenger/"><button type="button" class="btn btn-default shadow-button">Search Booking</button></a>
+<!--      <button type="button" class="btn btn-default shadow-button">Clone Booking</button>-->
+      <button type="button" class="btn btn-default shadow-button">Pending Booking</button>
+      <button type="button" class="btn btn-default shadow-button">Messages</button>
+      <button>
+      <td style="padding-right: 10px;">
+        <select onchange="location = this.options[this.selectedIndex].value;" style="color:black; height: 25px; font-size: 14px; width: 100px;" class="formcontrol"  name="reportsagent" id="reportsagent">
+        <option selected="selected" disabled="disabled" >Reports</option>
+         <option value="/profit_report/">Profit Report</option>
+          <option value="/advance_profit_report/"> Detailed Profit Report</option>
+          <option value="/supplier_report">Supplier Report</option>
+          <option value="/payment_made_report/">Payment Made Report</option>
+          <option value="/product_report/">Product Report</option>
+          <option value="/accounts_report/">Accounts Report</option>
+          <option value="/payment_received_report/">Payment received Report</option>
+          <option selected value="/taps_report/">Taps Report</option>
+        </select>
+      </td>
+      </button>
+        <br><br>
+        <div class="row" style="margin-left:1%;">
+            <form class="form-inline" method="POST">
+                <div class="form-group">
+                  <label for="from">From:</label>
+                  <input type="text" class="form-control" id="from" placeholder="Start Date" name="from" required>
+                </div>
+                <div class="form-group">
+                  <label for="to">To:</label>
+                  <input type="text" class="form-control" id="to" placeholder="End Date" name="to" required>
+                </div>
+                <button type="submit" class="btn btn-default">Submit</button>
+            </form>
+        </div>
+  </div>
+</div>
+
+</div>
+
+<div class="container-fluid">
+  <h3>Taps Report</h3>
+  <table class="table table-striped">
+    <thead>
+      <tr>
+        <th>Client Name</th>
+        <th>Date Fund Received</th>
+        <th>Payment Method</th>
+        <th>Gross Payment</th>
+        <th>Supplier Name</th>
+        <th>Payment Method Of Supplier</th>
+        <th>Supplier Amount</th>
+        <th>Insurance Debited</th>
+        <th>Atol</th>
+        <th>SFC</th>
+        <th>Commission</th>
+      </tr>
+    </thead>
+    <tbody>
+    {% for x, y in booking.items %}
+      <tr>
+        <td>{{y.customer_name}}</td>
+        <td>{% for x in y.date_fund_received %} {{x}} ,{% endfor %}</td>
+        <td>{% for z in y.payment_method %} {{z}} ,{% endfor %}</td>
+        <td>{{y.payment_received}}</td>
+        <td>{% for z in y.supplier_name %} {{z}} ,{% endfor %}</td>
+        <td>{% for z in y.supplier_pay_method %} {{z}} ,{% endfor %}</td>
+        <td>{{y.supplier_amount}}</td>
+        <td>{{y.package.insurance}}</td>
+        <td>{{y.package.atol}}</td>
+        <td>{{y.package.sfc}}</td>
+        <td>{{y.package.commission}}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+
+
+<script>
+    $(document).ready(function(){
+            var date_input=$('input[name="from"], input[name="to"]'); //our date input has the name "date"
+            var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+            date_input.datepicker({
+              format: 'd MM yyyy',
+              container: container,
+              todayHighlight: true,
+              autoclose: true,
+            })
+          })
+
+
+</script>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+
+</body>
+</html>

@@ -11,6 +11,7 @@ class Booking(models.Model):
     booking_name = models.CharField(max_length=50)
     added_date = models.DateTimeField(auto_now_add=True)
     booking_agent = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.IntegerField(null=True, blank=True)
 
     def __str__(self):
         return self.booking_name
