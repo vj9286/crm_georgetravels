@@ -19,7 +19,7 @@ from .views import landing_page, homepage, flight_booking_view, \
     flight_booking_change_view, flight_delete_view, hotel_booking,\
     booking_error, car_booking, tours_booking, cruise_booking, hotel_delete_view, payment, package, generate_history,\
     history, profit_report, advance_profit_report, supplier_report, payment_made_report, accounts, notes, product_report,\
-    accounts_report, payment_received_report, taps_report
+    accounts_report, payment_received_report, taps_report, agent_profit_report
 
 urlpatterns = [
     path('', landing_page),
@@ -47,6 +47,7 @@ urlpatterns = [
     path('payment_made_report/', payment_made_report),
     path('payment_received_report/', payment_received_report),
     path('hotel_booking/', booking_error),
+    path('agent_profit_report/', agent_profit_report),
     path('cruise_hire/', booking_error),
     path('car_hire/', booking_error),
     path('tours/', booking_error),

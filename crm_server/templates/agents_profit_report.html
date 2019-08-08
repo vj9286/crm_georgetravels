@@ -57,13 +57,13 @@
       <button>
       <td style="padding-right: 10px;">
         <select onchange="location = this.options[this.selectedIndex].value;" style="color:black; height: 25px; font-size: 14px; width: 100px;" class="formcontrol"  name="reportsagent" id="reportsagent">
-       <option value="/profit_report/">Profit Report</option>
+       <option  selected value="/profit_report/">Profit Report</option>
           <option value="/advance_profit_report/"> Detailed Profit Report</option>
           <option value="/supplier_report">Supplier Report</option>
           <option value="/payment_made_report/">Payment Made Report</option>
           <option value="/product_report/">Product Report</option>
           <option  value="/accounts_report/">Accounts Report</option>
-          <option selected value="/payment_received_report/">Payment received Report</option>
+          <option value="/payment_received_report/">Payment received Report</option>
           <option value="/taps_report/">Taps Report</option>
           <option value="/agent_profit_report/">Agent Profit Report</option>
         </select>
@@ -80,7 +80,10 @@
                   <label for="to">To:</label>
                   <input type="text" class="form-control" id="to" placeholder="End Date" name="to" required>
                 </div>
+
+
                 <button type="submit" class="btn btn-default">Submit</button>
+
             </form>
         </div>
   </div>
@@ -89,31 +92,19 @@
 </div>
 
 <div class="container-fluid">
-  <h3>Payment Received Report</h3>
+  <h3>Agent Profit Report</h3>
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Booking Name</th>
-        <th>Booking ID</th>
-        <th>Invoice No.</th>
-        <th>Payment Date</th>
-        <th>Transaction ID</th>
-        <th>Gross Amount</th>
-        <th>Card Type</th>
-        <th>Transaction Charge</th>
+        <th>Agent Name</th>
+        <th>Agent Profit</th>
       </tr>
     </thead>
     <tbody>
-    {% for x, y in booking.items %}
+    {% for x, y in agent_profit.items %}
       <tr>
-        <td>{{y.booking.booking_name}}</td>
-        <td>{{y.booking.booking_id}}</td>
-        <td></td>
-        <td>{{y.details.date_fund_received}}</td>
-        <td>{{y.details.transaction_id}}</td>
-        <td>{{y.details.gross_amount}}</td>
-        <td>{{y.details.payment_method}}</td>
-        <td>{{y.details.surcharge}}</td>
+        <td>{{x}}</td>
+        <td>{{y}}</td>
       </tr>
     {% endfor %}
     </tbody>

@@ -772,6 +772,38 @@ def profit_report(request):
     return render(request, template, context)
 
 
+
+@csrf_exempt
+@login_required(login_url='/admin/login')
+def agent_profit_report(request):
+    template = 'templates/agents_profit_report.html'
+    context = dict()
+    context['username'] = request.user
+    context['title'] = SITE_HEADER
+    context['agents'] = User.objects.all()
+    agent_profit = dict()
+    for i in context['agents']:
+        all_booking = Booking.objects.filter(booking_agent=i)
+        agent_profit[i.username] = 0
+        for j in all_booking:
+            profit = calculate_profit(Package.objects.get(booking=j))['updated_profit']
+            agent_profit[i.username] += profit
+    context['agent_profit'] = agent_profit
+    if request.method == "POST":
+        start_date = date_for_db_formatter(request.POST.get('from'))
+        end_date = date_for_db_formatter(request.POST.get('to'))
+
+        for i in context['agents']:
+            all_booking = Booking.objects.filter(booking_agent=i, added_date__gte=datetime.datetime.strptime(start_date, "%Y-%m-%d"),
+                                                 added_date__lte=datetime.datetime.strptime(end_date, "%Y-%m-%d") + datetime.timedelta(days=1))
+            agent_profit[i.username] = 0
+            for j in all_booking:
+                profit = calculate_profit(Package.objects.get(booking=j))['updated_profit']
+                agent_profit[i.username] += profit
+        context['agent_profit'] = agent_profit
+    return render(request, template, context)
+
+
 @csrf_exempt
 @login_required(login_url='/admin/login')
 def advance_profit_report(request):
