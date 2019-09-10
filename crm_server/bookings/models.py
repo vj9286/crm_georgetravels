@@ -3,15 +3,19 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 
+
 # Create your models here.
-
-
 class Booking(models.Model):
     booking_id = models.CharField(max_length=15)
     booking_name = models.CharField(max_length=50)
     added_date = models.DateTimeField(auto_now_add=True)
     booking_agent = models.ForeignKey(User, on_delete=models.CASCADE)
-    status = models.IntegerField(null=True, blank=True)
+    status = models.IntegerField(null=True, blank=True, choices=((1, "Agent"),
+                                                                 (2, "Tour"),
+                                                                 (3, "Payment"),
+                                                                 (4, "Accounts"),
+                                                                 (5, "Ticketing"),
+                                                                 (6, "Documentation")), default=1)
 
     def __str__(self):
         return self.booking_name

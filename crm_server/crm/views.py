@@ -43,6 +43,47 @@ def update_package(instance):
     package.save()
 
 
+def check_authorization(function):
+    def wrap(request, id,  *args, **kwargs):
+        group = request.user.groups.values_list('name', flat=True)
+        try:
+            if request.user.is_superuser:
+                return function(request, id, *args, **kwargs)
+            elif 'Agent' in group:
+                if Booking.objects.get(id=id).status == 1:
+                    return function(request, id, *args, **kwargs)
+                else:
+                    return HttpResponse("You are not authorized to view this page, please contact your admin")
+            elif 'Tour' in group:
+                if Booking.objects.get(id=id).status == 2:
+                    return function(request, id, *args, **kwargs)
+                else:
+                    return HttpResponse("You are not authorized to view this page, please contact your admin")
+            elif 'Payment' in group:
+                if Booking.objects.get(id=id).status == 3:
+                    return function(request, id, *args, **kwargs)
+                else:
+                    return HttpResponse("You are not authorized to view this page, please contact your admin")
+            elif 'Accounts' in group:
+                if Booking.objects.get(id=id).status == 4:
+                    return function(request, id, *args, **kwargs)
+                else:
+                    return HttpResponse("You are not authorized to view this page, please contact your admin")
+            elif 'Ticketing' in group:
+                if Booking.objects.get(id=id).status == 5:
+                    return function(request, id, *args, **kwargs)
+                else:
+                    return HttpResponse("You are not authorized to view this page, please contact your admin")
+            elif 'Documentation' in group:
+                if Booking.objects.get(id=id).status == 6:
+                    return function(request, id, *args, **kwargs)
+                else:
+                    return HttpResponse("You are not authorized to view this page, please contact your admin")
+        except Exception as e:
+            return HttpResponse("The booking you are trying to get doesn't exist.")
+    return wrap
+
+
 @login_required(login_url='/admin/login')
 def homepage(request):
     if not request.user.is_authenticated:
@@ -201,6 +242,7 @@ def flight_booking_view(request):
 
 @csrf_exempt
 @login_required(login_url='/admin/login')
+@check_authorization
 @transaction.atomic
 def flight_booking_change_view(request, id):
     flights = Flight.objects.filter(booking_id=id)
@@ -332,6 +374,7 @@ def flight_delete_view(request, booking_id, flight_id):
 @csrf_exempt
 @login_required(login_url='/admin/login')
 @transaction.atomic
+@check_authorization
 def hotel_booking(request, id):
     template = 'templates/hotel_booking.html'
     context = dict()
@@ -390,6 +433,7 @@ def hotel_delete_view(request, booking_id, hotel_id):
 @csrf_exempt
 @login_required(login_url='/admin/login')
 @transaction.atomic
+@check_authorization
 def car_booking(request, id):
     template = 'templates/car_booking.html'
     context = dict()
@@ -445,6 +489,7 @@ def booking_error(request):
 @csrf_exempt
 @login_required(login_url='/admin/login')
 @transaction.atomic
+@check_authorization
 def tours_booking(request, id):
     template = 'templates/tour_booking.html'
     context = dict()
@@ -489,6 +534,7 @@ def tours_booking(request, id):
 @csrf_exempt
 @login_required(login_url='/admin/login')
 @transaction.atomic
+@check_authorization
 def cruise_booking(request, id):
     template = 'templates/cruise_booking.html'
     context = dict()
@@ -534,6 +580,7 @@ def cruise_booking(request, id):
 @csrf_exempt
 @login_required(login_url='/admin/login')
 @transaction.atomic
+@check_authorization
 def package(request, id):
     template = 'templates/package.html'
     context = dict()
@@ -568,6 +615,7 @@ def package(request, id):
 @csrf_exempt
 @login_required(login_url='/admin/login')
 @transaction.atomic
+@check_authorization
 def payment(request, id):
     template = 'templates/payments.html'
     context = dict()
@@ -581,7 +629,7 @@ def payment(request, id):
     fields = Payments._meta.fields
     payment_meta = Payments._meta
     payment = dict()
-    if request.method == "POST":
+    if request.method == "POST" and request.POST.get('send') == "1":
         print(request.POST)
         for x in fields:
             type = payment_meta.get_field(x.name).get_internal_type()
@@ -606,6 +654,20 @@ def payment(request, id):
             update_package(created)
             generate_history(created, 1, request)
         return redirect('/payments/{0}/change/'.format(id))
+    elif request.method == "POST" and request.POST.get('send') == "2":
+        if context['booking'].status <=6 :
+            context['booking'].status = context['booking'].status + 1
+            context['booking'].save()
+            return ('/admin/flightbooking/passenger/')
+        else:
+            return HttpResponse("The booking is already in the last queue")
+    elif request.method == "POST" and request.POST.get('send') == "3":
+        if context['booking'].status != 1:
+            context['booking'].status = context['booking'].status - 1
+            context['booking'].save()
+            return HttpResponseRedirect('/admin/flightbooking/passenger/')
+        else:
+            return HttpResponse("The booking is already at the lowest level")
     return render(request, template, context)
 
 
@@ -633,6 +695,7 @@ def history(request, id):
 @csrf_exempt
 @login_required(login_url='/admin/login')
 @transaction.atomic
+@check_authorization
 def accounts(request, id):
     template = 'templates/accounts.html'
     context = dict()
@@ -1109,6 +1172,8 @@ def taps_report(request):
 
     context['booking'] = booking
     return render(request, template, context)
+
+
 
 # @csrf_exempt
 # @login_required(login_url='/admin/login')

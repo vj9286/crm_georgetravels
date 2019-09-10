@@ -639,6 +639,21 @@
             $('#hotel1').addClass("active in");
             $('#1').hide();
          {% endif %}
+         {% if not request.user.is_superuser %}
+             function makereadonly(){
+              $('input[name="supplier"]').prop("readonly",true);
+              $('input[name="deposit_paid"]').prop("readonly",true);
+              $('input[name="supplier_ref"]').prop("disabled",true);
+              $('input[name="payment_due"]').prop("readonly",true);
+              $('input[name="booking_date"]').prop("disabled",true);
+              $('input[name="payment_method"]').prop("disabled",true);
+              $('select[name="booked_by"]').prop("disabled",true);
+              $('input[name="balance_due_date"]').prop("readonly",true);
+              $('input[name="cancellation_date"]').prop("readonly",true);
+              $('input[name="vat_id"]').prop("disabled",true);
+            }
+            makereadonly();
+         {% endif %}
             </script>
           <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>

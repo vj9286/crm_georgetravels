@@ -65,10 +65,25 @@ class PassengerAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         group = request.user.groups.values_list('name', flat=True)
         qs = super(PassengerAdmin, self).get_queryset(request)
-        if request.user.is_superuser:
+        if request.user.is_superuser or 'Admin' in group:
             return qs
         elif 'Agent' in group:
-            qs = qs.filter(flight__booking__booking_agent=request.user)
+            qs = qs.filter(flight__booking__status=1, flight__booking__booking_agent=request.user)
+            return qs
+        elif 'Tour' in group:
+            qs = qs.filter(flight__booking__status=2)
+            return qs
+        elif 'Payment' in group:
+            qs = qs.filter(flight__booking__status=3)
+            return qs
+        elif 'Accounts' in group:
+            qs = qs.filter(flight__booking__status=4)
+            return qs
+        elif 'Ticketing' in group:
+            qs = qs.filter(flight__booking__status=5)
+            return qs
+        elif 'Documentation' in group:
+            qs = qs.filter(flight__booking__status=6)
             return qs
         else:
             return qs
