@@ -1,10 +1,10 @@
-Django==2.2
+Django==2.2.24
 django-nested-inline==0.3.7
 mysqlclient==1.4.2.post1
 pkg-resources==0.0.0
 pytz==2019.1
 sqlparse==0.3.0
-Django==2.2
+Django==2.2.24
 django-nested-inline==0.3.7
 mysqlclient==1.4.2.post1
 pkg-resources==0.0.0
